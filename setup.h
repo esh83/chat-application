@@ -15,6 +15,11 @@ public:
     setup(QWidget *parent = nullptr);
     ~setup();
 
+private slots:
+    void on_btn_login_clicked();
+
+    void on_btn_signup_clicked();
+
 private:
     Ui::setup *ui;
 };

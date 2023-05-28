@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/src">
+        <file>img/tel-banner1.jpg</file>
+    </qresource>
+</RCC>
