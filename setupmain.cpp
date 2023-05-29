@@ -85,7 +85,7 @@ void SetupMain::on_btn_login_login_clicked()
 
 void SetupMain::on_btn_signup_signup_clicked()
 {
-     if(ui->input_login_username->text().isEmpty() || ui->input_login_password->text().isEmpty()){
+     if(ui->input_signup_username->text().isEmpty() || ui->input_signup_password->text().isEmpty()){
          QMessageBox::warning(this, tr("Warning"), tr("Please enter username and password!"));
          return;
      }
