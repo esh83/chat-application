@@ -9,20 +9,14 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    logindialog.cpp \
     main.cpp \
-    setup.cpp \
-    signupdialog.cpp
+    setupmain.cpp
 
 HEADERS += \
-    logindialog.h \
-    setup.h \
-    signupdialog.h
+    setupmain.h
 
 FORMS += \
-    logindialog.ui \
-    setup.ui \
-    signupdialog.ui
+    setupmain.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
