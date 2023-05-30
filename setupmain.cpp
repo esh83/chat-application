@@ -58,16 +58,17 @@ void SetupMain::on_btn_login_login_clicked()
      QString password= ui->input_login_password->text();
 
      QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-     QUrl url(QString(API_ADRESS)+"/login?username="+username+"&password="+password);
+     //QUrl url(QString(API_ADRESS)+"/login?username="+username+"&password="+password);
+     QUrl url(QString(API_ADRESS)+"/postsg/1");
      QNetworkRequest request(url);
 
-     //*
 
-
+     ui->btn_login_login->setText("Loading...");
+     ui->btn_login_login->setDisabled(true);
      QNetworkReply* reply = manager->get(request);
 
      // connect signals and slots to handle the response
-     connect(reply, &QNetworkReply::finished, [=]() mutable {
+     connect(reply, &QNetworkReply::finished, [=]() {
          if (reply->error() != QNetworkReply::NoError) {
              qDebug()<<"Login Error: " << reply->errorString();
          } else {
@@ -76,8 +77,9 @@ void SetupMain::on_btn_login_login_clicked()
 
               qDebug()<<"Logged in successfully with token: ";
          }
+         ui->btn_login_login->setText("login");
+         ui->btn_login_login->setDisabled(false);
          reply->deleteLater();
-
      });
 
 }
@@ -101,7 +103,8 @@ void SetupMain::on_btn_signup_signup_clicked()
      QUrl url(QString(API_ADRESS)+"/sighnup?username="+username+"password="+password+"firstname="+firstname+"lastname"+lastname);
      QNetworkRequest request(url);
 
-
+     ui->btn_signup_signup->setText(tr("Loading.."));
+     ui->btn_signup_signup->setDisabled(true);
 
      QNetworkReply* reply = manager->get(request);
 
@@ -118,7 +121,10 @@ void SetupMain::on_btn_signup_signup_clicked()
                  qDebug()<<"Signup Error: " + message;
              }
          }
+         ui->btn_signup_signup->setText("SignUp");
+         ui->btn_signup_signup->setDisabled(false);
          reply->deleteLater();
      });
+
 }
 
