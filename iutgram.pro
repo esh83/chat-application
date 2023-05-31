@@ -13,6 +13,7 @@ SOURCES += \
     setupmain.cpp
 
 HEADERS += \
+    config.h \
     setupmain.h
 
 FORMS += \
