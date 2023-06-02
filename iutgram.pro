@@ -13,6 +13,7 @@ SOURCES += \
     setupmain.cpp
 
 HEADERS += \
+    config.h \
     setupmain.h
 
 FORMS += \
@@ -25,3 +26,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     source.qrc
+
+QMAKE_CXXFLAGS += -std=gnu++11

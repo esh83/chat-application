@@ -28,6 +28,10 @@ private slots:
 
     void on_btn_login_cancel_clicked();
 
+    void on_btn_login_login_clicked();
+
+    void on_btn_signup_signup_clicked();
+
 private:
     Ui::SetupMain *ui;
 };
