@@ -10,19 +10,16 @@ CONFIG += c++17
 
 SOURCES += \
     chatpage.cpp \
-    itemchat.cpp \
     main.cpp \
     setupmain.cpp
 
 HEADERS += \
     chatpage.h \
-    itemchat.h \
     config.h \
     setupmain.h
 
 FORMS += \
     chatpage.ui \
-    itemchat.ui \
     setupmain.ui
 
 # Default rules for deployment.
