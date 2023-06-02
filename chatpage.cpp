@@ -9,7 +9,7 @@ ChatPage::ChatPage( QString token , QWidget *parent) :
 {
     getUsersList();
     getGroupList();
-//    getChannelList();
+    getChannelList();
 
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
@@ -167,5 +167,46 @@ void ChatPage::getGroupList()
                 reply->deleteLater();
             });
 
+
+}
+
+void ChatPage::getChannelList()
+{
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QUrl url(QString(API_ADRESS)+"/getchannellist?token="+m_token);
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager->get(request);
+    connect(reply, &QNetworkReply::finished, [=]() mutable
+            {
+                if (reply->error() != QNetworkReply::NoError)
+                {
+                    qDebug()<<"request error: " << reply->errorString();
+                }
+                else
+                {
+                    QByteArray response = reply->readAll();
+                    qDebug()<<response;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                    QJsonObject jsonObj = jsonDoc.object();
+                    QString code = jsonDoc.object().value("code").toString();
+
+                    if (code == "200")
+                    {
+
+                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
+                            if(it.value().isObject()){
+                                QString channelName = it.value().toObject().value("channel_name").toString();
+                                ui->messagesList->addItem(channelName);
+                            }
+
+                        }
+                    }
+                    else{
+                        qDebug() << "error";
+                    }
+
+                }
+                reply->deleteLater();
+            });
 
 }
