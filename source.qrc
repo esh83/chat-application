@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/src">
         <file>img/tel-banner1.jpg</file>
+        <file>img/plus_icon.png</file>
+        <file>img/plus_icon_2.png</file>
+        <file>img/bg-main-2.jpg</file>
+        <file>img/pattern_bg.jpg</file>
+        <file>img/pattern-2.jpg</file>
+        <file>img/send_icon.png</file>
     </qresource>
 </RCC>
