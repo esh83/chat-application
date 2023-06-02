@@ -5,9 +5,10 @@
 #include <QBrush>
 #include <QColor>
 ChatPage::ChatPage(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::ChatPage)
 {
+    setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
 
     ui->messagesList->setStyleSheet(
@@ -77,5 +78,6 @@ ChatPage::ChatPage(QWidget *parent) :
 
 ChatPage::~ChatPage()
 {
+
     delete ui;
 }

@@ -1,13 +1,14 @@
 #ifndef CHATPAGE_H
 #define CHATPAGE_H
 
-#include <QWidget>
+#include <QDialog>
 
+#include <QWidget>
 namespace Ui {
 class ChatPage;
 }
 
-class ChatPage : public QWidget
+class ChatPage : public QDialog
 {
     Q_OBJECT
 

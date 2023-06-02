@@ -2,12 +2,12 @@
 #define SETUPMAIN_H
 
 #include <QWidget>
-
+#include <QDialog>
 namespace Ui {
 class SetupMain;
 }
 
-class SetupMain : public QWidget
+class SetupMain : public QDialog
 {
     Q_OBJECT
 

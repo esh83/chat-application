@@ -8,9 +8,11 @@
 #include <QDebug>
 #include <config.h>
 #include <QMessageBox>
+#include "chatpage.h"
+
 
 SetupMain::SetupMain(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::SetupMain)
 {
     ui->setupUi(this);
@@ -84,21 +86,30 @@ void SetupMain::on_btn_login_login_clicked()
             qDebug()<<response;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
             QJsonObject jsonObj = jsonDoc.object();
+            message = jsonObj.value("message").toString();
+            code = jsonObj.value("code").toString();
+            token = jsonObj.value("token").toString();
 
-            if (jsonObj.value("message") == "Logged in Successfully")
+            if (code == "200")
             {
-                qDebug()<<"logged in successfully.";
-                message = jsonObj.value("message").toString();
-                code = jsonObj.value("code").toString();
-                token = jsonObj.value("token").toString();
+
+                ChatPage* chat = new ChatPage();
+                connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
+                chat->show();
+                this->hide();
+
+
             }
-            else
+            else if(code == "404")
             {
-                qDebug()<<"Login Error: "+jsonObj.value("message").toString() ;
-                code = jsonObj.value("code").toString();
-                message = jsonObj.value("message").toString();
+                QMessageBox::warning(this ,"error" ,"user not found");
+
+            }else if(code == "401"){
+                QMessageBox::warning(this ,"error" ,message);
+
+            }else{
+               QMessageBox::warning(this ,"error" ,"login failed");
             }
-            qDebug()<<code<<message<<token;
 
         }
         reply->deleteLater();
@@ -129,11 +140,7 @@ void SetupMain::on_btn_signup_signup_clicked()
 
     QUrl url(QString(API_ADRESS)+"/signup?username="+username+"&password="+password+"&firstname="+firstname+"&lastname"+lastname);
     QNetworkRequest request(url);
-
-
-
     QNetworkReply* reply = manager->get(request);
-
     QObject::connect(reply, &QNetworkReply::finished, [=]()mutable
     {
         if (reply->error() != QNetworkReply::NoError)
@@ -146,20 +153,23 @@ void SetupMain::on_btn_signup_signup_clicked()
                 qDebug()<<response;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
             QJsonObject jsonObj = jsonDoc.object();
-            if (jsonObj.value("message") == "Signed Up Successfully")
+            code = jsonObj.value("code").toString();
+            message = jsonObj.value("message").toString();
+            if (code == "200")
             {
-                qDebug()<<"Signed up successfully.";
-                code = jsonObj.value("code").toString();
-                message = jsonObj.value("message").toString();
+                QMessageBox::information(this ,"success" ,"signed up successfully try to login");
+                ui->stackedWidget->setCurrentIndex(1);
 
             }
-            else
+            else if(code == "204")
             {
-                qDebug()<<"Signup Error: "+jsonObj.value("message").toString() ;
-                code = jsonObj.value("code").toString();
-                message = jsonObj.value("message").toString();
+                QMessageBox::warning(this ,"error" ,"username already exist try again");
+
+            }else{
+                QMessageBox::warning(this ,"error" ,"sign up failed");
+
             }
-            qDebug()<<code<<message;
+
 
         }
         reply->deleteLater();
@@ -169,84 +179,5 @@ void SetupMain::on_btn_signup_signup_clicked()
 }
 
 
-void SetupMain::on_btn_login_login_clicked()
-{
-     if(ui->input_login_username->text().isEmpty() || ui->input_login_password->text().isEmpty()){
-         QMessageBox::warning(this, tr("Warning"), tr("Please enter username and password!"));
-         return;
-     }
 
-     QString username= ui->input_login_username->text();
-     QString password= ui->input_login_password->text();
-
-     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-     //QUrl url(QString(API_ADRESS)+"/login?username="+username+"&password="+password);
-     QUrl url(QString(API_ADRESS)+"/postsg/1");
-     QNetworkRequest request(url);
-
-
-     ui->btn_login_login->setText("Loading...");
-     ui->btn_login_login->setDisabled(true);
-     QNetworkReply* reply = manager->get(request);
-
-     // connect signals and slots to handle the response
-     connect(reply, &QNetworkReply::finished, [=]() {
-         if (reply->error() != QNetworkReply::NoError) {
-             qDebug()<<"Login Error: " << reply->errorString();
-         } else {
-             QByteArray response = reply->readAll();
-             qDebug()<<response;
-
-              qDebug()<<"Logged in successfully with token: ";
-         }
-         ui->btn_login_login->setText("login");
-         ui->btn_login_login->setDisabled(false);
-         reply->deleteLater();
-     });
-
-}
-
-
-void SetupMain::on_btn_signup_signup_clicked()
-{
-     if(ui->input_signup_username->text().isEmpty() || ui->input_signup_password->text().isEmpty()){
-         QMessageBox::warning(this, tr("Warning"), tr("Please enter username and password!"));
-         return;
-     }
-
-
-     QString  username =ui->input_signup_username->text();
-     QString  password =ui->input_signup_password->text();
-     QString  firstname =ui->input_firstname->text();
-     QString  lastname =ui->input_lastname->text();
-
-     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-
-     QUrl url(QString(API_ADRESS)+"/sighnup?username="+username+"password="+password+"firstname="+firstname+"lastname"+lastname);
-     QNetworkRequest request(url);
-
-     ui->btn_signup_signup->setText(tr("Loading.."));
-     ui->btn_signup_signup->setDisabled(true);
-
-     QNetworkReply* reply = manager->get(request);
-
-     QObject::connect(reply, &QNetworkReply::finished, [=]() mutable {
-         if (reply->error() != QNetworkReply::NoError) {
-             qDebug()<<"Signup Error: " << reply->errorString();
-         } else {
-             QByteArray response = reply->readAll();
-             QString message = QString(response);
-
-             if (message == "up signed successfully") {
-                 qDebug()<<"Signed up successfully.";
-             } else {
-                 qDebug()<<"Signup Error: " + message;
-             }
-         }
-         ui->btn_signup_signup->setText("SignUp");
-         ui->btn_signup_signup->setDisabled(false);
-         reply->deleteLater();
-     });
-
-}
 
