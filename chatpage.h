@@ -19,11 +19,13 @@ class ChatPage : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChatPage(QWidget *parent = nullptr , QString token = "");
+    explicit ChatPage( QString token = "" ,QWidget *parent = nullptr);
     ~ChatPage();
 
 private:
     void getUsersList();
+    void getGroupList();
+    void getChannelList();
     Ui::ChatPage *ui;
     QString m_token;
 };

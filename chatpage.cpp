@@ -3,11 +3,14 @@
 #include <QSize>
 #include <QBrush>
 #include <QColor>
-ChatPage::ChatPage(QWidget *parent , QString token) :
+ChatPage::ChatPage( QString token , QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ChatPage) , m_token(token)
 {
     getUsersList();
+    getGroupList();
+//    getChannelList();
+
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
 
@@ -110,6 +113,48 @@ void ChatPage::getUsersList()
                             if(it.value().isObject()){
                                 QString username = it.value().toObject().value("src").toString();
                                 ui->messagesList->addItem(username);
+                            }
+
+                        }
+                    }
+                    else{
+                        qDebug() << "error";
+                    }
+
+                }
+                reply->deleteLater();
+            });
+
+
+}
+
+void ChatPage::getGroupList()
+{
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QUrl url(QString(API_ADRESS)+"/getgrouplist?token="+m_token);
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager->get(request);
+    connect(reply, &QNetworkReply::finished, [=]() mutable
+            {
+                if (reply->error() != QNetworkReply::NoError)
+                {
+                    qDebug()<<"request error: " << reply->errorString();
+                }
+                else
+                {
+                    QByteArray response = reply->readAll();
+                    qDebug()<<response;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                    QJsonObject jsonObj = jsonDoc.object();
+                    QString code = jsonDoc.object().value("code").toString();
+
+                    if (code == "200")
+                    {
+
+                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
+                            if(it.value().isObject()){
+                                QString groupName = it.value().toObject().value("group_name").toString();
+                                ui->messagesList->addItem(groupName);
                             }
 
                         }
