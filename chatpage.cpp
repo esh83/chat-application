@@ -1,6 +1,5 @@
 #include "chatpage.h"
 #include "ui_chatpage.h"
-#include "itemchat.h"
 #include <QSize>
 #include <QBrush>
 #include <QColor>
