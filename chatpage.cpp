@@ -3,10 +3,11 @@
 #include <QSize>
 #include <QBrush>
 #include <QColor>
-ChatPage::ChatPage(QWidget *parent) :
+ChatPage::ChatPage(QWidget *parent , QString token) :
     QDialog(parent),
-    ui(new Ui::ChatPage)
+    ui(new Ui::ChatPage) , m_token(token)
 {
+    getUsersList();
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
 
@@ -51,11 +52,11 @@ ChatPage::ChatPage(QWidget *parent) :
         "}"
 
         );
-    for(int i =0 ; i < 10; i++){
+    /*for(int i =0 ; i < 10; i++){
         QListWidgetItem *item = new QListWidgetItem(QString("Digital Marketing GP %1\nvahid azari : hello guys whats up dudes how you doing").arg(QString::number(i)) , ui->messagesList);
         item->setTextAlignment(Qt::AlignLeft);
 
-    }
+    }*/
     for(int i =0 ; i < 10; i++){
         if(i%2){
             QListWidgetItem *item = new QListWidgetItem(QString("ehsan shafiee : hello dude how are you ?") , ui->chatsList);
@@ -79,4 +80,47 @@ ChatPage::~ChatPage()
 {
 
     delete ui;
+}
+
+void ChatPage::getUsersList()
+{
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QUrl url(QString(API_ADRESS)+"/getuserlist?token="+m_token);
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager->get(request);
+    connect(reply, &QNetworkReply::finished, [=]() mutable
+            {
+                if (reply->error() != QNetworkReply::NoError)
+                {
+                    qDebug()<<"request error: " << reply->errorString();
+                }
+                else
+                {
+                    QByteArray response = reply->readAll();
+                    qDebug()<<response;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                    QJsonObject jsonObj = jsonDoc.object();
+                    QString code = jsonDoc.object().value("code").toString();
+
+                    if (code == "200")
+                    {
+
+                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
+                            if(it.value().isObject()){
+                                QString username = it.value().toObject().value("src").toString();
+                                ui->messagesList->addItem(username);
+                            }
+
+                        }
+                    }
+                    else{
+                        qDebug() << "error";
+                    }
+
+                }
+                reply->deleteLater();
+            });
+
+
 }
