@@ -20,7 +20,7 @@ class ChatPage : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChatPage(QString username="", QString token = "" ,QWidget *parent = nullptr);
+    explicit ChatPage(QString password="" ,QString username="", QString token = "" ,QWidget *parent = nullptr);
     ~ChatPage();
 
 private slots:
@@ -30,6 +30,9 @@ private slots:
 
     void on_messagesList_channel_itemClicked(QListWidgetItem *item);
 
+
+    void on_btn_logout_clicked();
+
 private:
     void getUsersList();
     void getGroupList();
@@ -37,6 +40,7 @@ private:
     Ui::ChatPage *ui;
     QString m_token;
     QString m_username;
+    QString m_password;
 
 };
 

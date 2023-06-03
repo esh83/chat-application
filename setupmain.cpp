@@ -9,6 +9,7 @@
 #include <config.h>
 #include <QMessageBox>
 #include "chatpage.h"
+#include "queries.h"
 
 
 SetupMain::SetupMain(QWidget *parent) :
@@ -17,6 +18,26 @@ SetupMain::SetupMain(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
+    try{
+      createTblInfo();
+    }catch(QString &err){
+        qDebug()<<err;
+    }
+
+    TableInfo info;
+    try{
+        info = selectTblinfo();
+        if(info.token!=""){
+            ChatPage* chat = new ChatPage( info.password , info.username, info.token);
+            connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
+            connect(chat , SIGNAL(accepted()) , this , SLOT(show()));
+            chat->show();
+            QTimer::singleShot(100, this, SLOT(hide()));
+
+        }
+    }catch(QString &err){
+        qDebug()<<err;
+    }
 }
 
 SetupMain::~SetupMain()
@@ -87,9 +108,10 @@ void SetupMain::on_btn_login_login_clicked()
 
             if (code == "200")
             {
-
-                ChatPage* chat = new ChatPage( username, token);
+                insertTblInfo(token,username,password ,"John Doe");
+                ChatPage* chat = new ChatPage(password ,username , token);
                 connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
+                 connect(chat , SIGNAL(accepted()) , this , SLOT(show()));
                 chat->show();
                 this->hide();
 
