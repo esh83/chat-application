@@ -231,7 +231,8 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem *item)
                             if(it.value().isObject()){
                                 QString src = it.value().toObject().value("src").toString();
                                 QString body = it.value().toObject().value("body").toString();
-                                QString message = src + " : " + body ;
+                                QString date = it.value().toObject().value("date").toString();
+                                QString message = src + " : " + body + "\n" + date;
 
 
                                 if(m_username!=src){
@@ -296,7 +297,8 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
                             if(it.value().isObject()){
                                 QString src = it.value().toObject().value("src").toString();
                                 QString body = it.value().toObject().value("body").toString();
-                                QString message = src + " : " + body ;
+                                QString date = it.value().toObject().value("date").toString();
+                                QString message = src + " : " + body +"\n" + date ;
 
 
                                 if(m_username!=src){
@@ -363,7 +365,8 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
                             if(it.value().isObject()){
 
                                 QString body = it.value().toObject().value("body").toString();
-                                QString message = m_dst + "\n" + body ;
+                                QString date = it.value().toObject().value("date").toString();
+                                QString message = m_dst + "\n" + body + "\n" + date ;
                                 QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                 item->setTextAlignment(Qt::AlignLeft);
                                 item->setSizeHint(QSize(100 , 100));
