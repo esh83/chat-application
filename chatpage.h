@@ -9,6 +9,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QListWidgetItem>
 #include "config.h"
 namespace Ui {
 class ChatPage;
@@ -19,8 +20,11 @@ class ChatPage : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChatPage( QString token = "" ,QWidget *parent = nullptr);
+    explicit ChatPage(QString username, QString token = "" ,QWidget *parent = nullptr);
     ~ChatPage();
+
+private slots:
+    void on_messagesList_chat_itemClicked(QListWidgetItem *item);
 
 private:
     void getUsersList();
@@ -28,6 +32,8 @@ private:
     void getChannelList();
     Ui::ChatPage *ui;
     QString m_token;
+    QString m_username;
+
 };
 
 #endif // CHATPAGE_H

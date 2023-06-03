@@ -23,9 +23,9 @@ QString message_list_styles = "QListWidget#%1{"
                   "color:white;"
                   "}";
 
-ChatPage::ChatPage( QString token , QWidget *parent) :
+ChatPage::ChatPage(QString username, QString token , QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ChatPage) , m_token(token)
+    ui(new Ui::ChatPage) , m_token(token) , m_username(username)
 {
     getUsersList();
     getGroupList();
@@ -59,22 +59,6 @@ ChatPage::ChatPage( QString token , QWidget *parent) :
         "}"
 
         );
-
-    for(int i =0 ; i < 10; i++){
-        if(i%2){
-            QListWidgetItem *item = new QListWidgetItem(QString("ehsan shafiee : hello dude how are you ?") , ui->chatsList);
-            item->setTextAlignment(Qt::AlignLeft);
-            item->setSizeHint(QSize(100 , 100));
-        }else{
-            QListWidgetItem *item = new QListWidgetItem(QString("ali mohseni : tnx and u?") , ui->chatsList);
-            item->setTextAlignment(Qt::AlignRight);
-            item->setSizeHint(QSize(100 , 100));
-        }
-
-    }
-
-
-
 
 
 }
@@ -210,3 +194,71 @@ void ChatPage::getChannelList()
             });
 
 }
+
+
+
+void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem *item)
+{
+    ui->chatsList->clear();
+    ui->chat_title->setText("Loaing...");
+    QString m_dst = item->text();
+//    QString m_date =NULL;
+
+
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QUrl url(QString(API_ADRESS)+"/getuserchats?token="+m_token+"&dst="+m_dst);
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager->get(request);
+    connect(reply, &QNetworkReply::finished, [=]() mutable
+            {
+                if (reply->error() != QNetworkReply::NoError)
+                {
+                    qDebug()<<"request error: " << reply->errorString();
+                }
+                else
+                {
+                    QByteArray response = reply->readAll();
+                    qDebug()<<response;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                    QJsonObject jsonObj = jsonDoc.object();
+                    QString code = jsonDoc.object().value("code").toString();
+
+                    if (code == "200")
+                    {
+
+                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
+                            if(it.value().isObject()){
+                                QString src = it.value().toObject().value("src").toString();
+                                QString body = it.value().toObject().value("body").toString();
+                                QString message = src + " : " + body ;
+
+
+                                if(m_username!=src){
+                                    QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
+                                    item->setTextAlignment(Qt::AlignLeft);
+                                    item->setSizeHint(QSize(100 , 100));
+                                }else{
+                                    QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
+                                    item->setTextAlignment(Qt::AlignRight);
+                                    item->setSizeHint(QSize(100 , 100));
+                                }
+
+                            }
+
+                        }
+                        ui->chat_title->setText(m_dst);
+
+                    }
+                    else{
+                        qDebug() << "error";
+                    }
+
+                }
+                reply->deleteLater();
+            });
+
+
+
+}
+

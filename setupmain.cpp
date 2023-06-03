@@ -93,7 +93,7 @@ void SetupMain::on_btn_login_login_clicked()
             if (code == "200")
             {
 
-                ChatPage* chat = new ChatPage( token);
+                ChatPage* chat = new ChatPage( username, token);
                 connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
                 chat->show();
                 this->hide();
