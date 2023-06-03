@@ -3,6 +3,26 @@
 #include <QSize>
 #include <QBrush>
 #include <QColor>
+
+QString message_list_styles = "QListWidget#%1{"
+                  "background-color:white;"
+                  "border:none;"
+                  "outline:none;"
+                  "border-radius:20px;"
+                  "padding:20px 0px"
+                  "}"
+                  "QListWidget#%1::item {"
+                  "color:black;"
+                  "padding:5px;"
+                  "height:40px;"
+                  "border-bottom:1px solid lightgray;"
+
+                  "}"
+                  "QListWidget#%1::item:selected {"
+                  "background-color: #324D6A;"
+                  "color:white;"
+                  "}";
+
 ChatPage::ChatPage( QString token , QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ChatPage) , m_token(token)
@@ -14,25 +34,9 @@ ChatPage::ChatPage( QString token , QWidget *parent) :
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
 
-    ui->messagesList->setStyleSheet(
-        "QListWidget#messagesList{"
-        "background-color:white;"
-        "border:none;"
-        "outline:none;"
-        "border-radius:20px;"
-        "padding:20px 0px"
-        "}"
-        "QListWidget#messagesList::item {"
-        "color:black;"
-        "padding:5px;"
-        "height:40px;"
-        "border-bottom:1px solid lightgray;"
-
-        "}"
-        "QListWidget#messagesList::item:selected {"
-        "background-color: #324D6A;"
-        "color:white;"
-        "}");
+    ui->messagesList_channel->setStyleSheet(message_list_styles.arg("messagesList_channel"));
+    ui->messagesList_chat->setStyleSheet(message_list_styles.arg("messagesList_chat"));
+    ui->messagesList_group->setStyleSheet(message_list_styles.arg("messagesList_group"));
     ui->chatsList->setStyleSheet(
         "QListWidget#chatsList{"
         "background-image: url(:/src/img/pattern-2.jpg);"
@@ -55,11 +59,7 @@ ChatPage::ChatPage( QString token , QWidget *parent) :
         "}"
 
         );
-    /*for(int i =0 ; i < 10; i++){
-        QListWidgetItem *item = new QListWidgetItem(QString("Digital Marketing GP %1\nvahid azari : hello guys whats up dudes how you doing").arg(QString::number(i)) , ui->messagesList);
-        item->setTextAlignment(Qt::AlignLeft);
 
-    }*/
     for(int i =0 ; i < 10; i++){
         if(i%2){
             QListWidgetItem *item = new QListWidgetItem(QString("ehsan shafiee : hello dude how are you ?") , ui->chatsList);
@@ -112,7 +112,7 @@ void ChatPage::getUsersList()
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString username = it.value().toObject().value("src").toString();
-                                ui->messagesList->addItem(username);
+                                ui->messagesList_chat->addItem(username);
                             }
 
                         }
@@ -154,7 +154,7 @@ void ChatPage::getGroupList()
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString groupName = it.value().toObject().value("group_name").toString();
-                                ui->messagesList->addItem(groupName);
+                                ui->messagesList_group->addItem(groupName);
                             }
 
                         }
@@ -196,7 +196,7 @@ void ChatPage::getChannelList()
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString channelName = it.value().toObject().value("channel_name").toString();
-                                ui->messagesList->addItem(channelName);
+                                ui->messagesList_channel->addItem(channelName);
                             }
 
                         }
