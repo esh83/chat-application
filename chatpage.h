@@ -20,7 +20,7 @@ class ChatPage : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChatPage(QString username, QString token = "" ,QWidget *parent = nullptr);
+    explicit ChatPage(QString username="", QString token = "" ,QWidget *parent = nullptr);
     ~ChatPage();
 
 private slots:

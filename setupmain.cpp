@@ -59,25 +59,20 @@ void SetupMain::on_btn_login_login_clicked()
     QString message;
     QString code;
     QString token;
-
-
-
     QString username= ui->input_login_username->text();
     QString password= ui->input_login_password->text();
-
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/login?username="+username+"&password="+password);
     QNetworkRequest request(url);
-
-
-
     QNetworkReply* reply = manager->get(request);
 
-
+    ui->btn_login_login->setDisabled(true);
+    ui->btn_login_login->setText("Loading ...");
     connect(reply, &QNetworkReply::finished, [=]() mutable
     {
         if (reply->error() != QNetworkReply::NoError)
         {
+            QMessageBox::warning(this ,"error" ,"something went wrong");
             qDebug()<<"Login Error: " << reply->errorString();
         }
         else
@@ -112,6 +107,8 @@ void SetupMain::on_btn_login_login_clicked()
             }
 
         }
+        ui->btn_login_login->setText("Login");
+        ui->btn_login_login->setDisabled(false);
         reply->deleteLater();
     });
 
@@ -125,32 +122,30 @@ void SetupMain::on_btn_signup_signup_clicked()
         QMessageBox::warning(this, tr("Warning"), tr("Please enter username and password!"));
         return;
     }
-
-
     QString message;
     QString code;
-
-
     QString  username =ui->input_signup_username->text();
     QString  password =ui->input_signup_password->text();
     QString  firstname =ui->input_firstname->text();
     QString  lastname =ui->input_lastname->text();
-
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
 
     QUrl url(QString(API_ADRESS)+"/signup?username="+username+"&password="+password+"&firstname="+firstname+"&lastname"+lastname);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
+    ui->btn_signup_signup->setDisabled(true);
+    ui->btn_signup_signup->setText("Loading ...");
     QObject::connect(reply, &QNetworkReply::finished, [=]()mutable
     {
         if (reply->error() != QNetworkReply::NoError)
         {
+            QMessageBox::warning(this ,"error" ,"something went wrong");
             qDebug()<<"Signup Error: " << reply->errorString();
         }
         else
         {
             QByteArray response = reply->readAll();
-                qDebug()<<response;
+            qDebug()<<response;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
             QJsonObject jsonObj = jsonDoc.object();
             code = jsonObj.value("code").toString();
@@ -159,6 +154,12 @@ void SetupMain::on_btn_signup_signup_clicked()
             {
                 QMessageBox::information(this ,"success" ,"signed up successfully try to login");
                 ui->stackedWidget->setCurrentIndex(1);
+                ui->input_firstname->clear();
+                ui->input_lastname->clear();
+                ui->input_login_password->clear();
+                ui->input_login_username->clear();
+                ui->input_signup_password->clear();
+                ui->input_signup_username->clear();
 
             }
             else if(code == "204")
@@ -172,6 +173,8 @@ void SetupMain::on_btn_signup_signup_clicked()
 
 
         }
+        ui->btn_signup_signup->setDisabled(true);
+        ui->btn_signup_signup->setText("SignUp");
         reply->deleteLater();
     });
 

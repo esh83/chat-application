@@ -33,7 +33,7 @@ ChatPage::ChatPage(QString username, QString token , QWidget *parent) :
 
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
-
+    ui->tabWidget->setCurrentIndex(0);
     ui->messagesList_channel->setStyleSheet(message_list_styles.arg("messagesList_channel"));
     ui->messagesList_chat->setStyleSheet(message_list_styles.arg("messagesList_chat"));
     ui->messagesList_group->setStyleSheet(message_list_styles.arg("messagesList_group"));
