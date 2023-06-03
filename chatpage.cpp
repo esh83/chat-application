@@ -327,3 +327,63 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
 
 }
 
+
+void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
+{
+    ui->chatsList->clear();
+    ui->chat_title->setText("Loaing...");
+    QString m_dst = item->text();
+    //    QString m_date =NULL;
+
+
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QUrl url(QString(API_ADRESS)+"/getchannelchats?token="+m_token+"&dst="+m_dst);
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager->get(request);
+    connect(reply, &QNetworkReply::finished, [=]() mutable
+            {
+                if (reply->error() != QNetworkReply::NoError)
+                {
+                    qDebug()<<"request error: " << reply->errorString();
+                }
+                else
+                {
+                    QByteArray response = reply->readAll();
+                    qDebug()<<response;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                    QJsonObject jsonObj = jsonDoc.object();
+                    QString code = jsonDoc.object().value("code").toString();
+
+                    if (code == "200")
+                    {
+
+                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++)
+                        {
+                            if(it.value().isObject()){
+
+                                QString body = it.value().toObject().value("body").toString();
+                                QString message = m_dst + "\n" + body ;
+                                QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
+                                item->setTextAlignment(Qt::AlignLeft);
+                                item->setSizeHint(QSize(100 , 100));
+
+
+                        }
+                        ui->chat_title->setText(m_dst);
+
+                    }
+
+                    }
+                    else{
+                        qDebug() << "error";
+                    }
+
+                }
+                reply->deleteLater();
+            });
+
+
+
+}
+
