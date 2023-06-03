@@ -26,6 +26,8 @@ public:
 private slots:
     void on_messagesList_chat_itemClicked(QListWidgetItem *item);
 
+    void on_messagesList_group_itemClicked(QListWidgetItem *item);
+
 private:
     void getUsersList();
     void getGroupList();
