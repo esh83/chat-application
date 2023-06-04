@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui network sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,11 +11,13 @@ CONFIG += c++17
 SOURCES += \
     chatpage.cpp \
     main.cpp \
+    queries.cpp \
     setupmain.cpp
 
 HEADERS += \
     chatpage.h \
     config.h \
+    queries.h \
     setupmain.h
 
 FORMS += \

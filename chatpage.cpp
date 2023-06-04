@@ -3,6 +3,8 @@
 #include <QSize>
 #include <QBrush>
 #include <QColor>
+#include <QMessageBox>
+#include "queries.h"
 
 QString message_list_styles = "QListWidget#%1{"
                   "background-color:white;"
@@ -23,9 +25,9 @@ QString message_list_styles = "QListWidget#%1{"
                   "color:white;"
                   "}";
 
-ChatPage::ChatPage(QString username, QString token , QWidget *parent) :
+ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ChatPage) , m_token(token) , m_username(username)
+    ui(new Ui::ChatPage) , m_token(token) , m_username(username) , m_password(password)
 {
     getUsersList();
     getGroupList();
@@ -33,7 +35,7 @@ ChatPage::ChatPage(QString username, QString token , QWidget *parent) :
 
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
-
+    ui->tabWidget->setCurrentIndex(0);
     ui->messagesList_channel->setStyleSheet(message_list_styles.arg("messagesList_channel"));
     ui->messagesList_chat->setStyleSheet(message_list_styles.arg("messagesList_chat"));
     ui->messagesList_group->setStyleSheet(message_list_styles.arg("messagesList_group"));
@@ -383,6 +385,60 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
                     }
 
                 }
+                reply->deleteLater();
+            });
+
+
+
+}
+
+
+
+
+
+void ChatPage::on_btn_logout_clicked()
+{
+
+
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QUrl url(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager->get(request);
+
+    ui->btn_logout->setDisabled(true);
+    ui->btn_logout->setText("Loading ...");
+    connect(reply, &QNetworkReply::finished, [=]() mutable
+            {
+                if (reply->error() != QNetworkReply::NoError)
+                {
+                    QMessageBox::warning(this ,"error" ,"something went wrong");
+                    qDebug()<<"logout Error: " << reply->errorString();
+                }
+                else
+                {
+                    QByteArray response = reply->readAll();
+                    qDebug()<<response;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                    QJsonObject jsonObj = jsonDoc.object();
+                   QString message = jsonObj.value("message").toString();
+                   QString code = jsonObj.value("code").toString();
+
+
+                    if (code == "200")
+                    {
+                        emptyTblInfo();
+                        this->accept();
+
+                    }
+
+                    else{
+                        QMessageBox::warning(this ,"error" ,message);
+                    }
+
+                }
+                ui->btn_logout->setText("Login");
+                ui->btn_logout->setDisabled(false);
                 reply->deleteLater();
             });
 
