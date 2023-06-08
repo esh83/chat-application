@@ -37,3 +37,4 @@ private:
 };
 
 #endif // SETUPMAIN_H
+//alaki
