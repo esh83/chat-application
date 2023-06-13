@@ -19,14 +19,15 @@ SetupMain::SetupMain(QWidget *parent) :
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
     try{
-      createTblInfo();
+        DB::createTblInfo();
     }catch(QString &err){
         qDebug()<<err;
     }
 
-    TableInfo info;
+
     try{
-        info = selectTblinfo();
+        DB::TableInfo info;
+        info = DB::selectTblinfo();
         if(info.token!=""){
             ChatPage* chat = new ChatPage( info.password , info.username, info.token);
             connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
@@ -108,7 +109,7 @@ void SetupMain::on_btn_login_login_clicked()
 
             if (code == "200")
             {
-                insertTblInfo(token,username,password ,"John Doe");
+                DB::insertTblInfo(token,username,password ,"John Doe");
                 ChatPage* chat = new ChatPage(password ,username , token);
                 connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
                  connect(chat , SIGNAL(accepted()) , this , SLOT(show()));

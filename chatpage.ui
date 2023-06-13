@@ -266,6 +266,12 @@ color : white;
    <property name="dragEnabled">
     <bool>false</bool>
    </property>
+   <property name="alternatingRowColors">
+    <bool>false</bool>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QWidget" name="widget_2" native="true">
    <property name="geometry">
@@ -399,6 +405,9 @@ background-color:white;</string>
      </property>
      <property name="autoScroll">
       <bool>true</bool>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>

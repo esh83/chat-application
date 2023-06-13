@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QShortcut>
 #include "queries.h"
+#include <QTimer>
 
 QString message_list_styles = "QListWidget#%1{"
                   "background-color:white;"
@@ -30,7 +31,16 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     QDialog(parent),
     ui(new Ui::ChatPage) , m_token(token) , m_username(username) , m_password(password), m_tabIndex(0)
 {
+    try{
+         DB::createTblChatsList();
+    }catch(QString &err){
+         qDebug()<<err;
+    }
 
+
+    getUsersList();
+    getGroupList();
+    getChannelList();
 
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
@@ -85,6 +95,20 @@ ChatPage::~ChatPage()
 void ChatPage::getUsersList()
 {
     ui->messagesList_chat->clear();
+    /*QTimer::singleShot(100, this, [=](){
+
+        for(int i=1;i!=-1;i++){
+            try{
+                DB::TableChatsList record = DB::selectTblChatsList(i,PERSONAL_CHAT);
+                ui->messagesList_chat->addItem(record.username);
+
+            }catch(QString &err){
+                qDebug() << err;
+                i=-2;
+            }
+
+        }
+    });*/
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getuserlist?token="+m_token);
@@ -110,6 +134,13 @@ void ChatPage::getUsersList()
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString username = it.value().toObject().value("src").toString();
+                                try{
+                                    DB::insertTblChatsList(username,"Jogn Doe",PERSONAL_CHAT);
+                                }catch(QString &err){
+                                    qDebug()<<err;
+                                }
+
+
                                 ui->messagesList_chat->addItem(username);
                             }
 
@@ -122,7 +153,6 @@ void ChatPage::getUsersList()
                 }
                 reply->deleteLater();
             });
-
 
 }
 
@@ -496,7 +526,8 @@ void ChatPage::on_btn_logout_clicked()
 
                     if (code == "200")
                     {
-                        emptyTblInfo();
+                       DB::emptyTblInfo();
+                        DB::emptyTblChatsList();
                         this->accept();
 
                     }
