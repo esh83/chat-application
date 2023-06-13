@@ -407,7 +407,7 @@ void ChatPage::on_btn_logout_clicked()
     QNetworkReply* reply = manager->get(request);
 
     ui->btn_logout->setDisabled(true);
-    ui->btn_logout->setText("Loading ...");
+
     connect(reply, &QNetworkReply::finished, [=]() mutable
             {
                 if (reply->error() != QNetworkReply::NoError)
