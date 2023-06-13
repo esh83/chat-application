@@ -11,7 +11,6 @@
 #include <QNetworkRequest>
 #include <QListWidgetItem>
 #include "config.h"
-
 #include "updateThread.h"
 namespace Ui {
 class ChatPage;
@@ -37,6 +36,13 @@ private slots:
     void on_messagesList_channel_itemClicked(QListWidgetItem *item);
     void getChannelChat(QString item);
 
+    void getUsersList();
+
+    void getGroupList();
+
+    void getChannelList();
+
+    void updateCurrentChatMessages();
 
     void getUsersList();
 
