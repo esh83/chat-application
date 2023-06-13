@@ -55,6 +55,9 @@ private slots:
     void on_btn_logout_clicked();
 
     void on_tabWidget_currentChanged(int index);
+    void on_btn_sendMessage_clicked();
+
+private:
 
 private:
     Ui::ChatPage *ui;
