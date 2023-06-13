@@ -260,6 +260,11 @@ color : white;
    </property>
    <property name="currentRow">
     <number>-1</number>
+   <property name="autoScrollMargin">
+    <number>16</number>
+   </property>
+   <property name="dragEnabled">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QWidget" name="widget_2" native="true">

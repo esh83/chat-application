@@ -321,7 +321,8 @@ void ChatPage::getGroupChat(QString item)
     ui->chat_title->setText("Loaing...");
     QString m_dst = item;
     //    QString m_date =NULL;
-
+    ui->btn_sendMessage->show();
+    ui->input_message->show();
 
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -401,7 +402,8 @@ void ChatPage::getChannelChat(QString item)
     ui->chat_title->setText("Loaing...");
     QString m_dst = item;
     //    QString m_date =NULL;
-
+    ui->btn_sendMessage->show();
+    ui->input_message->show();
 
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -559,6 +561,54 @@ void ChatPage::on_btn_sendMessage_clicked()
                 });
 
 
+    }
+    else if(ui->tabWidget->currentIndex()==1)
+    {
+
+        QString m_dst = ui->messagesList_channel->currentItem()->text();
+        QString m_body = ui->input_message->text();
+
+        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+        QUrl url(QString(API_ADRESS)+"/sendmessagechannel?token="+m_token+"&dst="+m_dst+"&body="+m_body);
+        QNetworkRequest request(url);
+        QNetworkReply* reply = manager->get(request);
+
+        connect(reply, &QNetworkReply::finished, [=]() mutable
+                {
+                    if (reply->error() != QNetworkReply::NoError)
+                    {
+                        qDebug()<<"request error: " << reply->errorString();
+                    }
+                    else
+                    {
+                        QByteArray response = reply->readAll();
+                        qDebug()<<response;
+                        QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                        QJsonObject jsonObj = jsonDoc.object();
+                        QString code = jsonDoc.object().value("code").toString();
+
+                        if (code == "200")
+                        {
+                            QListWidgetItem *item = new QListWidgetItem( m_body , ui->chatsList);
+                            item->setTextAlignment(Qt::AlignLeft);
+                            item->setSizeHint(QSize(100 , 100));
+                            ui->input_message->clear();
+
+                        }
+                        else if(code == "404"){
+                            ui->btn_sendMessage->hide();
+                            ui->input_message->hide();
+                            ui->input_message->clear();
+                            QMessageBox::warning(this ,"error" ,"you are not admin in this channel");
+                            qDebug() << "Admin error";
+                        }
+                        else
+                            qDebug() << "error";
+
+
+                    }
+                    reply->deleteLater();
+                });
 
 
     }
