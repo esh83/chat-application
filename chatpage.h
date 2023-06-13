@@ -12,6 +12,7 @@
 #include <QListWidgetItem>
 #include "config.h"
 
+#include "updateThread.h"
 namespace Ui {
 class ChatPage;
 }
@@ -31,17 +32,24 @@ private slots:
 
     void on_messagesList_channel_itemClicked(QListWidgetItem *item);
 
+    void getUsersList();
+
+    void getGroupList();
+
+    void getChannelList();
+
+    void updateCurrentChatMessages();
 
     void on_btn_logout_clicked();
 
 private:
-    void getUsersList();
-    void getGroupList();
-    void getChannelList();
+
     Ui::ChatPage *ui;
     QString m_token;
     QString m_username;
     QString m_password;
+    UpdateThread* m_updateThread;
+
 
 };
 

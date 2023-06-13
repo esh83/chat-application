@@ -64,17 +64,27 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     getUsersList();
     getGroupList();
     getChannelList();
+    m_updateThread = new UpdateThread(this);
+    connect(m_updateThread, &UpdateThread::updateUsersList, this, &ChatPage::getUsersList);
+    connect(m_updateThread, &UpdateThread::updateGroupList, this, &ChatPage::getGroupList);
+    connect(m_updateThread, &UpdateThread::updateChannelList, this, &ChatPage::getChannelList);
+    connect(m_updateThread, &UpdateThread::updateCurrentChatMessages, this, &ChatPage::updateCurrentChatMessages);
+    m_updateThread->start();
+
 
 }
 
 ChatPage::~ChatPage()
 {
-
+    m_updateThread->quit();
+    m_updateThread->wait();
+    delete m_updateThread;
     delete ui;
 }
 
 void ChatPage::getUsersList()
 {
+    ui->messagesList_chat->clear();
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getuserlist?token="+m_token);
@@ -118,6 +128,8 @@ void ChatPage::getUsersList()
 
 void ChatPage::getGroupList()
 {
+    ui->messagesList_group->clear();
+
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getgrouplist?token="+m_token);
     QNetworkRequest request(url);
@@ -160,6 +172,8 @@ void ChatPage::getGroupList()
 
 void ChatPage::getChannelList()
 {
+    ui->messagesList_channel->clear();
+
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getchannellist?token="+m_token);
     QNetworkRequest request(url);
@@ -197,6 +211,24 @@ void ChatPage::getChannelList()
                 reply->deleteLater();
             });
 
+}
+
+void ChatPage::updateCurrentChatMessages()
+{
+    QListWidgetItem* currentItem = ui->messagesList_chat->currentItem();
+    if (currentItem) {
+        on_messagesList_chat_itemClicked(currentItem);
+    } else {
+        currentItem = ui->messagesList_group->currentItem();
+        if (currentItem) {
+            on_messagesList_group_itemClicked(currentItem);
+        } else {
+            currentItem = ui->messagesList_channel->currentItem();
+            if (currentItem) {
+                on_messagesList_channel_itemClicked(currentItem);
+            }
+        }
+    }
 }
 
 

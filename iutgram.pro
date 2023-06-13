@@ -18,7 +18,8 @@ HEADERS += \
     chatpage.h \
     config.h \
     queries.h \
-    setupmain.h
+    setupmain.h \
+    updateThread.h
 
 FORMS += \
     chatpage.ui \
