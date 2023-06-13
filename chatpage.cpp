@@ -518,6 +518,7 @@ void ChatPage::on_btn_logout_clicked()
 
 void ChatPage::on_btn_sendMessage_clicked()
 {
+    ui->btn_sendMessage->setDisabled(true);
 
     if(ui->tabWidget->currentIndex()==0)
     {
@@ -612,6 +613,58 @@ void ChatPage::on_btn_sendMessage_clicked()
 
 
     }
+    else if(ui->tabWidget->currentIndex()==2)
+    {
+
+
+            QString m_dst = ui->messagesList_group->currentItem()->text();
+            QString m_body = ui->input_message->text();
+
+            QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+            QUrl url(QString(API_ADRESS)+"/sendmessagegroup?token="+m_token+"&dst="+m_dst+"&body="+m_body);
+            QNetworkRequest request(url);
+            QNetworkReply* reply = manager->get(request);
+
+            connect(reply, &QNetworkReply::finished, [=]() mutable
+                    {
+                        if (reply->error() != QNetworkReply::NoError)
+                        {
+                            qDebug()<<"request error: " << reply->errorString();
+                        }
+                        else
+                        {
+                            QByteArray response = reply->readAll();
+                            qDebug()<<response;
+                            QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                            QJsonObject jsonObj = jsonDoc.object();
+                            QString code = jsonDoc.object().value("code").toString();
+
+                            if (code == "200")
+                            {
+                                QListWidgetItem *item = new QListWidgetItem( m_body , ui->chatsList);
+                                item->setTextAlignment(Qt::AlignRight);
+                                item->setSizeHint(QSize(100 , 100));
+                                ui->input_message->clear();
+
+                            }
+                            else{
+                                qDebug() << "error";
+                            }
+
+                        }
+                        reply->deleteLater();
+                    });
+
+
+        }
+        else
+        {
+            QMessageBox::warning(this ,"error" ,"Error sending message");
+            qDebug() << "error";
+        }
+
+
+        ui->btn_sendMessage->setDisabled(false);
 
 }
 
