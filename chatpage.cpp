@@ -28,7 +28,7 @@ QString message_list_styles = "QListWidget#%1{"
 
 ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ChatPage) , m_token(token) , m_username(username) , m_password(password)
+    ui(new Ui::ChatPage) , m_token(token) , m_username(username) , m_password(password), m_tabIndex(0)
 {
 
 
@@ -106,7 +106,7 @@ void ChatPage::getUsersList()
 
                     if (code == "200")
                     {
-
+                        ui->tabWidget->setCurrentIndex(m_tabIndex);
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString username = it.value().toObject().value("src").toString();
@@ -150,7 +150,7 @@ void ChatPage::getGroupList()
 
                     if (code == "200")
                     {
-
+                        ui->tabWidget->setCurrentIndex(m_tabIndex);
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString groupName = it.value().toObject().value("group_name").toString();
@@ -194,7 +194,7 @@ void ChatPage::getChannelList()
 
                     if (code == "200")
                     {
-
+                        ui->tabWidget->setCurrentIndex(m_tabIndex);
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString channelName = it.value().toObject().value("channel_name").toString();
@@ -215,30 +215,32 @@ void ChatPage::getChannelList()
 
 void ChatPage::updateCurrentChatMessages()
 {
-    QListWidgetItem* currentItem = ui->messagesList_chat->currentItem();
-    if (currentItem) {
-        on_messagesList_chat_itemClicked(currentItem);
-    } else {
-        currentItem = ui->messagesList_group->currentItem();
-        if (currentItem) {
-            on_messagesList_group_itemClicked(currentItem);
-        } else {
-            currentItem = ui->messagesList_channel->currentItem();
-            if (currentItem) {
-                on_messagesList_channel_itemClicked(currentItem);
-            }
-        }
-    }
+    QString currentName = ui->chat_title->text();
+
+    if(ui->tabWidget->currentIndex()==0)
+    getUserChat(currentName);
+    else if(ui->tabWidget->currentIndex()==1)
+    getChannelChat(currentName);
+    else if(ui->tabWidget->currentIndex()==2)
+    getGroupChat(currentName);
 }
 
 
 
-void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem *item)
+void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
+{
+
+    QString m_dst = item->text();
+    getUserChat(m_dst);
+
+}
+
+void ChatPage::getUserChat(QString item)
 {
     ui->chatsList->clear();
     ui->chat_title->setText("Loaing...");
-    QString m_dst = item->text();
-//    QString m_date =NULL;
+    QString m_dst = item;
+    //    QString m_date =NULL;
 
 
 
@@ -305,11 +307,19 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem *item)
 
 }
 
+
 void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
+{
+    QString m_dst = item->text();
+   getGroupChat(m_dst);
+
+}
+
+void ChatPage::getGroupChat(QString item)
 {
     ui->chatsList->clear();
     ui->chat_title->setText("Loaing...");
-    QString m_dst = item->text();
+    QString m_dst = item;
     //    QString m_date =NULL;
 
 
@@ -375,15 +385,21 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
             });
 
 
-
 }
 
 
 void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 {
+    QString m_dst = item->text();
+    getChannelChat(m_dst);
+
+}
+
+void ChatPage::getChannelChat(QString item)
+{
     ui->chatsList->clear();
     ui->chat_title->setText("Loaing...");
-    QString m_dst = item->text();
+    QString m_dst = item;
     //    QString m_date =NULL;
 
 
@@ -426,10 +442,10 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
                                 ui->chatsList->scrollToBottom();
 
 
-                        }
-                        ui->chat_title->setText(m_dst);
+                            }
+                            ui->chat_title->setText(m_dst);
 
-                    }
+                        }
 
                     }
                     else{
@@ -439,7 +455,6 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
                 }
                 reply->deleteLater();
             });
-
 
 
 }
@@ -496,5 +511,13 @@ void ChatPage::on_btn_logout_clicked()
 
 
 
+}
+
+
+
+
+void ChatPage::on_tabWidget_currentChanged(int index)
+{
+    m_tabIndex = index ;
 }
 

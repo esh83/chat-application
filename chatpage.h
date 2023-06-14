@@ -26,11 +26,17 @@ public:
     ~ChatPage();
 
 private slots:
-    void on_messagesList_chat_itemClicked(QListWidgetItem *item);
+    void on_messagesList_chat_itemClicked(QListWidgetItem* item);
+    void getUserChat(QString item);
+
 
     void on_messagesList_group_itemClicked(QListWidgetItem *item);
+    void getGroupChat(QString item);
+
 
     void on_messagesList_channel_itemClicked(QListWidgetItem *item);
+    void getChannelChat(QString item);
+
 
     void getUsersList();
 
@@ -42,13 +48,15 @@ private slots:
 
     void on_btn_logout_clicked();
 
-private:
+    void on_tabWidget_currentChanged(int index);
 
+private:
     Ui::ChatPage *ui;
     QString m_token;
     QString m_username;
     QString m_password;
     UpdateThread* m_updateThread;
+    int m_tabIndex;
 
 
 };
