@@ -249,6 +249,18 @@ color : white;
    <property name="styleSheet">
     <string notr="true"/>
    </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
+   </property>
+   <property name="autoScroll">
+    <bool>true</bool>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+   </property>
+   <property name="currentRow">
+    <number>-1</number>
+   </property>
   </widget>
   <widget class="QWidget" name="widget_2" native="true">
    <property name="geometry">
@@ -297,7 +309,7 @@ color:white;</string>
 border-bottom-right-radius:20px;
 border-bottom-left-radius:20px;</string>
    </property>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="input_message">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -317,7 +329,7 @@ padding:10px;</string>
      <string>Type yout message . . .</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="btn_sendMessage">
     <property name="geometry">
      <rect>
       <x>470</x>

@@ -4,6 +4,7 @@
 #include <QBrush>
 #include <QColor>
 #include <QMessageBox>
+#include <QShortcut>
 #include "queries.h"
 
 QString message_list_styles = "QListWidget#%1{"
@@ -29,9 +30,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     QDialog(parent),
     ui(new Ui::ChatPage) , m_token(token) , m_username(username) , m_password(password)
 {
-    getUsersList();
-    getGroupList();
-    getChannelList();
+
 
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
@@ -62,6 +61,9 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
 
         );
 
+    getUsersList();
+    getGroupList();
+    getChannelList();
 
 }
 
@@ -228,12 +230,17 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem *item)
 
                     if (code == "200")
                     {
+                        QString message = jsonObj.value("message").toString();
+                        int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
 
-                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
-                            if(it.value().isObject()){
-                                QString src = it.value().toObject().value("src").toString();
-                                QString body = it.value().toObject().value("body").toString();
-                                QString date = it.value().toObject().value("date").toString();
+                        for (int i =0 ; i< numberOfMessages ; ++i) {
+                            QString key = "block " + QString::number(i);
+                            if (jsonObj.contains(key)) {
+                                QJsonObject block = jsonObj.value(key).toObject();
+                                QString body = block.value("body").toString();
+                                QString src = block.value("src").toString();
+                                QString dst = block.value("dst").toString();
+                                QString date = block.value("date").toString();
                                 QString message = src + " : " + body + "\n" + date;
 
 
@@ -246,6 +253,8 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem *item)
                                     item->setTextAlignment(Qt::AlignRight);
                                     item->setSizeHint(QSize(100 , 100));
                                 }
+                                ui->chatsList->scrollToBottom();
+
 
                             }
 
@@ -260,7 +269,6 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem *item)
                 }
                 reply->deleteLater();
             });
-
 
 
 }
@@ -294,12 +302,17 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
 
                     if (code == "200")
                     {
+                        QString message = jsonObj.value("message").toString();
+                        int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
 
-                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
-                            if(it.value().isObject()){
-                                QString src = it.value().toObject().value("src").toString();
-                                QString body = it.value().toObject().value("body").toString();
-                                QString date = it.value().toObject().value("date").toString();
+                        for (int i =0 ; i< numberOfMessages ; ++i) {
+                            QString key = "block " + QString::number(i);
+                            if (jsonObj.contains(key)) {
+                                QJsonObject block = jsonObj.value(key).toObject();
+                                QString body = block.value("body").toString();
+                                QString src = block.value("src").toString();
+                                QString dst = block.value("dst").toString();
+                                QString date = block.value("date").toString();
                                 QString message = src + " : " + body +"\n" + date ;
 
 
@@ -312,6 +325,8 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
                                     item->setTextAlignment(Qt::AlignRight);
                                     item->setSizeHint(QSize(100 , 100));
                                 }
+                                ui->chatsList->scrollToBottom();
+
 
                             }
 
@@ -361,17 +376,22 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 
                     if (code == "200")
                     {
+                        QString message = jsonObj.value("message").toString();
+                        int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
 
-                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++)
-                        {
-                            if(it.value().isObject()){
-
-                                QString body = it.value().toObject().value("body").toString();
-                                QString date = it.value().toObject().value("date").toString();
+                        for (int i =0 ; i< numberOfMessages ; ++i) {
+                            QString key = "block " + QString::number(i);
+                            if (jsonObj.contains(key)) {
+                                QJsonObject block = jsonObj.value(key).toObject();
+                                QString body = block.value("body").toString();
+                                QString src = block.value("src").toString();
+                                QString dst = block.value("dst").toString();
+                                QString date = block.value("date").toString();
                                 QString message = m_dst + "\n" + body + "\n" + date ;
                                 QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                 item->setTextAlignment(Qt::AlignLeft);
                                 item->setSizeHint(QSize(100 , 100));
+                                ui->chatsList->scrollToBottom();
 
 
                         }

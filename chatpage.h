@@ -11,6 +11,7 @@
 #include <QNetworkRequest>
 #include <QListWidgetItem>
 #include "config.h"
+
 namespace Ui {
 class ChatPage;
 }
