@@ -20,6 +20,13 @@ struct TableChatsList{
     QString title{""};
     int type;
 };
+struct TableChats{
+    QString src{""};
+    QString dst{""};
+    QString body{""};
+    QString date{""};
+
+};
 //table info functions
 void createTblInfo();
 TableInfo selectTblinfo();
@@ -32,6 +39,9 @@ QVector<TableChatsList> selectTblChatsList(int type);
 void emptyTblChatsList();
 void deleteTblChatsList(int type);
 //table chats functions
-
+void createTblChats();
+void emptyTblChats();
+void insertTblChats(QString src, QString dst, QString body,QString date);
+QVector<TableChats> selectTblChats(QString src , QString dst);
 }
 #endif // QUERIES_H

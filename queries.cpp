@@ -144,3 +144,73 @@ void DB::deleteTblChatsList(int type)
         throw qry.lastError().text();
     }
 }
+
+void DB::createTblChats()
+{
+    QSqlQuery qry;
+    qry.prepare("CREATE TABLE IF NOT EXISTS tblchats (id INTEGER UNIQUE PRIMARY KEY, src TEXT, dst TEXT, body TEXT, date TEXT)");
+    if( !qry.exec() ){
+        throw qry.lastError().text();
+    }
+    else
+        qDebug() << "Table Chats created!";
+}
+void DB::emptyTblChats()
+{
+    QSqlQuery qry;
+    qry.prepare("DELETE FROM tblchats");
+    if( !qry.exec() ){
+        throw qry.lastError().text();
+    }
+}
+void DB::insertTblChats(QString src, QString dst, QString body,QString date)
+{
+    QSqlQuery qry;
+    qry.prepare( "INSERT INTO tblchats (src,dst,body,date) VALUES (:src,:dst,:body,:date)" );
+    qry.bindValue(":src" , src);
+    qry.bindValue(":dst" , dst);
+    qry.bindValue(":body" , body);
+      qry.bindValue(":date" , date);
+
+
+    if( !qry.exec() ){
+        throw qry.lastError().text();
+    }
+    else{
+        qDebug( "Inserted!" );
+    }
+}
+
+QVector<DB::TableChats> DB::selectTblChats(QString src, QString dst)
+{
+    QSqlQuery qry;
+    QVector<DB::TableChats> list;
+    if(src == "*"){
+        qry.prepare( "SELECT src,dst,body,date FROM tblchats WHERE dst=:dst" );
+        qry.bindValue(":dst" , dst);
+    }
+     else{
+           qry.prepare( "SELECT src,dst,body,date FROM tblchats WHERE (src=:src AND dst=:dst) OR (src=:dst AND dst=:src)" );
+           qry.bindValue(":src" , src);
+           qry.bindValue(":dst" , dst);
+         }
+
+    if( !qry.exec() ){
+        throw qry.lastError().text();
+    }
+    else
+    {
+
+        while(qry.next()){
+           TableChats tbl;
+
+           tbl.src = qry.value(qry.record().indexOf("src")).toString();
+           tbl.dst = qry.value(qry.record().indexOf("dst")).toString();
+           tbl.body = qry.value(qry.record().indexOf("body")).toString();
+           tbl.date = qry.value(qry.record().indexOf("date")).toString();
+           list.append(tbl);
+        }
+
+    }
+    return list;
+}
