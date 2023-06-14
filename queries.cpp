@@ -135,3 +135,13 @@ void DB::emptyTblChatsList()
     }
 }
 
+
+void DB::deleteTblChatsList(int type)
+{
+    QSqlQuery qry;
+    qry.prepare("DELETE FROM tblchatslist WHERE type=:typ");
+    qry.bindValue(":typ",type);
+    if( !qry.exec() ){
+        throw qry.lastError().text();
+    }
+}

@@ -38,12 +38,13 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     }
 
 
-    getUsersList();
-    getGroupList();
-    getChannelList();
 
     setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     ui->setupUi(this);
+
+    getUsersList();
+    getGroupList();
+    getChannelList();
     ui->tabWidget->setCurrentIndex(0);
     ui->messagesList_channel->setStyleSheet(message_list_styles.arg("messagesList_channel"));
     ui->messagesList_chat->setStyleSheet(message_list_styles.arg("messagesList_chat"));
@@ -71,9 +72,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
 
         );
 
-    getUsersList();
-    getGroupList();
-    getChannelList();
+
     m_updateThread = new UpdateThread(this);
     connect(m_updateThread, &UpdateThread::updateUsersList, this, &ChatPage::getUsersList);
     connect(m_updateThread, &UpdateThread::updateGroupList, this, &ChatPage::getGroupList);
@@ -95,12 +94,12 @@ ChatPage::~ChatPage()
 void ChatPage::getUsersList()
 {
     ui->messagesList_chat->clear();
-    /*QTimer::singleShot(100, this, [=](){
 
         for(int i=1;i!=-1;i++){
             try{
                 DB::TableChatsList record = DB::selectTblChatsList(i,PERSONAL_CHAT);
                 ui->messagesList_chat->addItem(record.username);
+
 
             }catch(QString &err){
                 qDebug() << err;
@@ -108,7 +107,7 @@ void ChatPage::getUsersList()
             }
 
         }
-    });*/
+
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getuserlist?token="+m_token);
@@ -131,6 +130,9 @@ void ChatPage::getUsersList()
                     if (code == "200")
                     {
                         ui->tabWidget->setCurrentIndex(m_tabIndex);
+                        ui->messagesList_chat->clear();
+                        DB::deleteTblChatsList(PERSONAL_CHAT);
+
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString username = it.value().toObject().value("src").toString();

@@ -24,10 +24,13 @@ void createTblInfo();
 TableInfo selectTblinfo();
 void insertTblInfo(QString token , QString username, QString password,QString title);
 void emptyTblInfo();
-//table chats list functions
+//table chats_list functions
 void createTblChatsList();
 void insertTblChatsList(QString username , QString title, int type);
 TableChatsList selectTblChatsList(int id,int type);
 void emptyTblChatsList();
+void deleteTblChatsList(int type);
+//table chats functions
+
 }
 #endif // QUERIES_H
