@@ -49,6 +49,8 @@ private slots:
     void on_tabWidget_currentChanged(int index);
     void on_btn_sendMessage_clicked();
 
+    void on_btn_scrollBottom_clicked();
+
 private:
 
 private:

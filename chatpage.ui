@@ -455,6 +455,26 @@ background-color:white;</string>
     </widget>
    </widget>
   </widget>
+  <widget class="QPushButton" name="btn_scrollBottom">
+   <property name="geometry">
+    <rect>
+     <x>900</x>
+     <y>450</y>
+     <width>51</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:red;
+color:white;</string>
+   </property>
+   <property name="text">
+    <string>bottom</string>
+   </property>
+  </widget>
  </widget>
  <resources>
   <include location="source.qrc"/>

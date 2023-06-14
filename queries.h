@@ -6,6 +6,7 @@
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QString>
+#include <QVector>
 namespace DB{
 struct TableInfo {
     QString token{""};
@@ -27,7 +28,7 @@ void emptyTblInfo();
 //table chats_list functions
 void createTblChatsList();
 void insertTblChatsList(QString username , QString title, int type);
-TableChatsList selectTblChatsList(int id,int type);
+QVector<TableChatsList> selectTblChatsList(int type);
 void emptyTblChatsList();
 void deleteTblChatsList(int type);
 //table chats functions

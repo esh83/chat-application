@@ -7,6 +7,7 @@
 #include <QShortcut>
 #include "queries.h"
 #include <QTimer>
+#include <QVector>
 
 QString message_list_styles = "QListWidget#%1{"
                   "background-color:white;"
@@ -47,6 +48,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     getChannelList();
     ui->tabWidget->setCurrentIndex(0);
     ui->messagesList_chat->setCurrentRow(0);
+    on_messagesList_chat_itemClicked(ui->messagesList_chat->currentItem());
     ui->messagesList_channel->setStyleSheet(message_list_styles.arg("messagesList_channel"));
     ui->messagesList_chat->setStyleSheet(message_list_styles.arg("messagesList_chat"));
     ui->messagesList_group->setStyleSheet(message_list_styles.arg("messagesList_group"));
@@ -91,23 +93,18 @@ ChatPage::~ChatPage()
     delete m_updateThread;
     delete ui;
 }
+//left sidebar lists
 
 void ChatPage::getUsersList()
 {
     ui->messagesList_chat->clear();
-
-        for(int i=1;i!=-1;i++){
-            try{
-                DB::TableChatsList record = DB::selectTblChatsList(i,PERSONAL_CHAT);
-                ui->messagesList_chat->addItem(record.username);
-
-
-            }catch(QString &err){
-                qDebug() << err;
-                i=-2;
-            }
-
-        }
+    try{
+         QVector<DB::TableChatsList> list = DB::selectTblChatsList(PERSONAL_CHAT);
+         for(auto it = list.begin();it!=list.end();it++)
+             ui->messagesList_chat->addItem((*it).username);
+    }catch(QString &err){
+         qDebug() << err;
+    }
 
         if(m_tabIndex == 0)
             ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
@@ -164,8 +161,18 @@ void ChatPage::getUsersList()
 
 void ChatPage::getGroupList()
 {
+
     ui->messagesList_group->clear();
 
+    try{
+            QVector<DB::TableChatsList> list = DB::selectTblChatsList(GROUP_CHAT);
+            for(auto it = list.begin();it!=list.end();it++)
+             ui->messagesList_group->addItem((*it).username);
+    }catch(QString &err){
+            qDebug() << err;
+    }
+    if(m_tabIndex == 2)
+            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getgrouplist?token="+m_token);
     QNetworkRequest request(url);
@@ -187,9 +194,17 @@ void ChatPage::getGroupList()
                     if (code == "200")
                     {
                         ui->tabWidget->setCurrentIndex(m_tabIndex);
+                        ui->messagesList_group->clear();
+                        DB::deleteTblChatsList(GROUP_CHAT);
+
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString groupName = it.value().toObject().value("group_name").toString();
+                                try{
+                                    DB::insertTblChatsList(groupName,"Jogn Doe",GROUP_CHAT);
+                                }catch(QString &err){
+                                    qDebug()<<err;
+                                }
                                 ui->messagesList_group->addItem(groupName);
                             }
 
@@ -211,7 +226,15 @@ void ChatPage::getGroupList()
 void ChatPage::getChannelList()
 {
     ui->messagesList_channel->clear();
-
+    try{
+            QVector<DB::TableChatsList> list = DB::selectTblChatsList(CHANNEL_CHAT);
+            for(auto it = list.begin();it!=list.end();it++)
+             ui->messagesList_channel->addItem((*it).username);
+    }catch(QString &err){
+            qDebug() << err;
+    }
+    if(m_tabIndex == 1)
+            ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getchannellist?token="+m_token);
     QNetworkRequest request(url);
@@ -233,9 +256,16 @@ void ChatPage::getChannelList()
                     if (code == "200")
                     {
                         ui->tabWidget->setCurrentIndex(m_tabIndex);
+                        ui->messagesList_channel->clear();
+                        DB::deleteTblChatsList(CHANNEL_CHAT);
                         for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
                             if(it.value().isObject()){
                                 QString channelName = it.value().toObject().value("channel_name").toString();
+                                try{
+                                    DB::insertTblChatsList(channelName,"Jogn Doe",CHANNEL_CHAT);
+                                }catch(QString &err){
+                                    qDebug()<<err;
+                                }
                                 ui->messagesList_channel->addItem(channelName);
                             }
 
@@ -335,7 +365,7 @@ void ChatPage::getUserChat(QString item)
                                     item->setTextAlignment(Qt::AlignRight);
                                     item->setSizeHint(QSize(100 , 150));
                                 }
-                                ui->chatsList->scrollToBottom();
+
 
 
                             }
@@ -422,7 +452,6 @@ void ChatPage::getGroupChat(QString item)
                                     item->setTextAlignment(Qt::AlignRight);
                                     item->setSizeHint(QSize(100 , 150));
                                 }
-                                ui->chatsList->scrollToBottom();
 
 
                             }
@@ -500,7 +529,7 @@ void ChatPage::getChannelChat(QString item)
                                 QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                 item->setTextAlignment(Qt::AlignLeft);
                                 item->setSizeHint(QSize(100 , 150));
-                                ui->chatsList->scrollToBottom();
+
 
 
                             }
@@ -745,5 +774,11 @@ void ChatPage::on_btn_sendMessage_clicked()
 void ChatPage::on_tabWidget_currentChanged(int index)
 {
     m_tabIndex = index ;
+}
+
+
+void ChatPage::on_btn_scrollBottom_clicked()
+{
+    ui->chatsList->scrollToBottom();
 }
 

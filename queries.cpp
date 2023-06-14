@@ -100,11 +100,11 @@ void DB::insertTblChatsList(QString username, QString title, int type)
     }
 }
 
-DB::TableChatsList DB::selectTblChatsList(int id , int type)
+QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
 {
     QSqlQuery qry;
-    qry.prepare( "SELECT username,title,type FROM tblchatslist WHERE id=:id AND type=:typ" );
-    qry.bindValue(":id" , id);
+    QVector<DB::TableChatsList> list;
+    qry.prepare( "SELECT username,title,type FROM tblchatslist WHERE type=:typ" );
      qry.bindValue(":typ" , type);
     if( !qry.exec() ){
         throw qry.lastError().text();
@@ -112,18 +112,17 @@ DB::TableChatsList DB::selectTblChatsList(int id , int type)
     else
     {
 
-        if(qry.next()){
+        while(qry.next()){
            TableChatsList tbl;
 
            tbl.title = qry.value(qry.record().indexOf("title")).toString();
             tbl.username = qry.value(qry.record().indexOf("username")).toString();
              tbl.type = qry.value(qry.record().indexOf("type")).toInt();
-            return tbl;
-        }else{
-           throw qry.lastError().text();
+           list.append(tbl);
         }
 
     }
+    return list;
 }
 
 void DB::emptyTblChatsList()
