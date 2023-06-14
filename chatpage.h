@@ -44,14 +44,6 @@ private slots:
 
     void updateCurrentChatMessages();
 
-    void getUsersList();
-
-    void getGroupList();
-
-    void getChannelList();
-
-    void updateCurrentChatMessages();
-
     void on_btn_logout_clicked();
 
     void on_tabWidget_currentChanged(int index);
@@ -66,6 +58,7 @@ private:
     QString m_password;
     UpdateThread* m_updateThread;
     int m_tabIndex;
+    int m_selectedChatIndex{0};
 
 
 };

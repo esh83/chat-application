@@ -46,6 +46,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     getGroupList();
     getChannelList();
     ui->tabWidget->setCurrentIndex(0);
+    ui->messagesList_chat->setCurrentRow(0);
     ui->messagesList_channel->setStyleSheet(message_list_styles.arg("messagesList_channel"));
     ui->messagesList_chat->setStyleSheet(message_list_styles.arg("messagesList_chat"));
     ui->messagesList_group->setStyleSheet(message_list_styles.arg("messagesList_group"));
@@ -108,7 +109,8 @@ void ChatPage::getUsersList()
 
         }
 
-
+        if(m_tabIndex == 0)
+            ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getuserlist?token="+m_token);
     QNetworkRequest request(url);
@@ -153,6 +155,8 @@ void ChatPage::getUsersList()
                     }
 
                 }
+                if(m_tabIndex == 0)
+                    ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
                 reply->deleteLater();
             });
 
@@ -196,6 +200,8 @@ void ChatPage::getGroupList()
                     }
 
                 }
+                if(m_tabIndex == 2)
+                ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
                 reply->deleteLater();
             });
 
@@ -240,8 +246,12 @@ void ChatPage::getChannelList()
                     }
 
                 }
+                if(m_tabIndex == 1)
+                    ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
+
                 reply->deleteLater();
             });
+
 
 }
 
@@ -263,18 +273,22 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
 {
 
     QString m_dst = item->text();
+    m_selectedChatIndex = ui->messagesList_chat->currentRow();
     getUserChat(m_dst);
+    ui->messagesList_channel->setCurrentRow(-1);
+     ui->messagesList_group->setCurrentRow(-1);
 
 }
 
 void ChatPage::getUserChat(QString item)
 {
-    ui->chatsList->clear();
+
     ui->chat_title->setText("Loaing...");
     QString m_dst = item;
     //    QString m_date =NULL;
 
-
+    ui->btn_sendMessage->show();
+    ui->input_message->show();
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url(QString(API_ADRESS)+"/getuserchats?token="+m_token+"&dst="+m_dst);
@@ -296,6 +310,7 @@ void ChatPage::getUserChat(QString item)
 
                     if (code == "200")
                     {
+                        ui->chatsList->clear();
                         QString message = jsonObj.value("message").toString();
                         int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
 
@@ -307,17 +322,18 @@ void ChatPage::getUserChat(QString item)
                                 QString src = block.value("src").toString();
                                 QString dst = block.value("dst").toString();
                                 QString date = block.value("date").toString();
-                                QString message = src + " : " + body + "\n" + date;
+                                  int msgLength = body.length();
+                                QString message = src + " : " + body + "\n\n" + date;
 
 
                                 if(m_username!=src){
                                     QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                     item->setTextAlignment(Qt::AlignLeft);
-                                    item->setSizeHint(QSize(100 , 100));
+                                    item->setSizeHint(QSize(100 , 150));
                                 }else{
                                     QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                     item->setTextAlignment(Qt::AlignRight);
-                                    item->setSizeHint(QSize(100 , 100));
+                                    item->setSizeHint(QSize(100 , 150));
                                 }
                                 ui->chatsList->scrollToBottom();
 
@@ -343,13 +359,16 @@ void ChatPage::getUserChat(QString item)
 void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
 {
     QString m_dst = item->text();
+     m_selectedChatIndex = ui->messagesList_group->currentRow();
    getGroupChat(m_dst);
+     ui->messagesList_channel->setCurrentRow(-1);
+     ui->messagesList_chat->setCurrentRow(-1);
 
 }
 
 void ChatPage::getGroupChat(QString item)
 {
-    ui->chatsList->clear();
+
     ui->chat_title->setText("Loaing...");
     QString m_dst = item;
     //    QString m_date =NULL;
@@ -377,6 +396,7 @@ void ChatPage::getGroupChat(QString item)
 
                     if (code == "200")
                     {
+                          ui->chatsList->clear();
                         QString message = jsonObj.value("message").toString();
                         int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
 
@@ -388,17 +408,19 @@ void ChatPage::getGroupChat(QString item)
                                 QString src = block.value("src").toString();
                                 QString dst = block.value("dst").toString();
                                 QString date = block.value("date").toString();
-                                QString message = src + " : " + body +"\n" + date ;
+                                 int msgLength = body.length();
+                                QString message = src + " : " + body +"\n\n" + date ;
+
 
 
                                 if(m_username!=src){
                                     QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                     item->setTextAlignment(Qt::AlignLeft);
-                                    item->setSizeHint(QSize(100 , 100));
+                                    item->setSizeHint(QSize(100,150));
                                 }else{
                                     QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                     item->setTextAlignment(Qt::AlignRight);
-                                    item->setSizeHint(QSize(100 , 100));
+                                    item->setSizeHint(QSize(100 , 150));
                                 }
                                 ui->chatsList->scrollToBottom();
 
@@ -424,13 +446,16 @@ void ChatPage::getGroupChat(QString item)
 void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 {
     QString m_dst = item->text();
+     m_selectedChatIndex = ui->messagesList_channel->currentRow();
     getChannelChat(m_dst);
+     ui->messagesList_chat->setCurrentRow(-1);
+     ui->messagesList_group->setCurrentRow(-1);
 
 }
 
 void ChatPage::getChannelChat(QString item)
 {
-    ui->chatsList->clear();
+
     ui->chat_title->setText("Loaing...");
     QString m_dst = item;
     //    QString m_date =NULL;
@@ -458,6 +483,7 @@ void ChatPage::getChannelChat(QString item)
 
                     if (code == "200")
                     {
+                        ui->chatsList->clear();
                         QString message = jsonObj.value("message").toString();
                         int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
 
@@ -469,10 +495,11 @@ void ChatPage::getChannelChat(QString item)
                                 QString src = block.value("src").toString();
                                 QString dst = block.value("dst").toString();
                                 QString date = block.value("date").toString();
-                                QString message = m_dst + "\n" + body + "\n" + date ;
+                                  int msgLength = body.length();
+                                QString message = m_dst + " : " + body + "\n\n" + date ;
                                 QListWidgetItem *item = new QListWidgetItem(message , ui->chatsList);
                                 item->setTextAlignment(Qt::AlignLeft);
-                                item->setSizeHint(QSize(100 , 100));
+                                item->setSizeHint(QSize(100 , 150));
                                 ui->chatsList->scrollToBottom();
 
 
@@ -551,12 +578,13 @@ void ChatPage::on_btn_logout_clicked()
 
 void ChatPage::on_btn_sendMessage_clicked()
 {
+    if(ui->input_message->text() == "")return;
     ui->btn_sendMessage->setDisabled(true);
 
-    if(ui->tabWidget->currentIndex()==0)
+    if(m_tabIndex==0)
     {
 
-        QString m_dst = ui->messagesList_chat->currentItem()->text();
+        QString m_dst = ui->chat_title->text();
         QString m_body = ui->input_message->text();
 
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -591,15 +619,18 @@ void ChatPage::on_btn_sendMessage_clicked()
                         }
 
                     }
+
+                    ui->btn_sendMessage->setDisabled(false);
+                    ui->chatsList->scrollToBottom();
                     reply->deleteLater();
                 });
 
 
     }
-    else if(ui->tabWidget->currentIndex()==1)
+    else if(m_tabIndex==1)
     {
 
-        QString m_dst = ui->messagesList_channel->currentItem()->text();
+        QString m_dst = ui->chat_title->text();
         QString m_body = ui->input_message->text();
 
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -641,16 +672,19 @@ void ChatPage::on_btn_sendMessage_clicked()
 
 
                     }
+
+                    ui->btn_sendMessage->setDisabled(false);
+                    ui->chatsList->scrollToBottom();
                     reply->deleteLater();
                 });
 
 
     }
-    else if(ui->tabWidget->currentIndex()==2)
+    else if(m_tabIndex==2)
     {
 
 
-            QString m_dst = ui->messagesList_group->currentItem()->text();
+            QString m_dst = ui->chat_title->text();
             QString m_body = ui->input_message->text();
 
             QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -685,6 +719,9 @@ void ChatPage::on_btn_sendMessage_clicked()
                             }
 
                         }
+
+                        ui->btn_sendMessage->setDisabled(false);
+                        ui->chatsList->scrollToBottom();
                         reply->deleteLater();
                     });
 
@@ -697,61 +734,10 @@ void ChatPage::on_btn_sendMessage_clicked()
         }
 
 
-        ui->btn_sendMessage->setDisabled(false);
 
 }
 
 
-void ChatPage::on_btn_sendMessage_clicked()
-{
-
-    if(ui->tabWidget->currentIndex()==0)
-    {
-
-        QString m_dst = ui->messagesList_chat->currentItem()->text();
-        QString m_body = ui->input_message->text();
-
-        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-        QUrl url(QString(API_ADRESS)+"/sendmessageuser?token="+m_token+"&dst="+m_dst+"&body="+m_body);
-        QNetworkRequest request(url);
-        QNetworkReply* reply = manager->get(request);
-
-        connect(reply, &QNetworkReply::finished, [=]() mutable
-                {
-                    if (reply->error() != QNetworkReply::NoError)
-                    {
-                        qDebug()<<"request error: " << reply->errorString();
-                    }
-                    else
-                    {
-                        QByteArray response = reply->readAll();
-                        qDebug()<<response;
-                        QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
-                        QJsonObject jsonObj = jsonDoc.object();
-                        QString code = jsonDoc.object().value("code").toString();
-
-                        if (code == "200")
-                        {
-                            QListWidgetItem *item = new QListWidgetItem( m_body , ui->chatsList);
-                            item->setTextAlignment(Qt::AlignRight);
-                            item->setSizeHint(QSize(100 , 100));
-                            ui->input_message->clear();
-
-                        }
-                        else{
-                            qDebug() << "error";
-                        }
-
-                    }
-                    reply->deleteLater();
-                });
-
-
-
-
-    }
-
-}
 
 
 

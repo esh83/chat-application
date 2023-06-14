@@ -15,7 +15,7 @@ public:
         m_mutex(new QMutex())
     {
         connect(m_timer, &QTimer::timeout, this, &UpdateThread::updateUI);
-        m_timer->start(10000);
+        m_timer->start(20000);
     }
 
     ~UpdateThread() override {
