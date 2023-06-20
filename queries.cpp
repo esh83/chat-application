@@ -53,7 +53,7 @@ void DB::insertTblInfo(QString token , QString username, QString password,QStrin
         throw qry.lastError().text();
     }
     else{
-        qDebug( "Inserted!" );
+        //qDebug( "Inserted!" );
     }
 }
 
@@ -96,7 +96,7 @@ void DB::insertTblChatsList(QString username, QString title, int type)
         throw qry.lastError().text();
     }
     else{
-        qDebug( "Inserted!" );
+        //qDebug( "Inserted!" );
     }
 }
 
@@ -177,7 +177,7 @@ void DB::insertTblChats(QString src, QString dst, QString body,QString date)
         throw qry.lastError().text();
     }
     else{
-        qDebug( "Inserted!" );
+        //qDebug( "Inserted!" );
     }
 }
 
