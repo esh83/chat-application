@@ -12,6 +12,7 @@
 #include <QListWidgetItem>
 #include "config.h"
 #include "updateThread.h"
+#include "requesthandler.h"
 namespace Ui {
 class ChatPage;
 }

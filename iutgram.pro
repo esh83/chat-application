@@ -12,12 +12,14 @@ SOURCES += \
     chatpage.cpp \
     main.cpp \
     queries.cpp \
+    requesthandler.cpp \
     setupmain.cpp
 
 HEADERS += \
     chatpage.h \
     config.h \
     queries.h \
+    requesthandler.h \
     setupmain.h \
     updateThread.h
 
