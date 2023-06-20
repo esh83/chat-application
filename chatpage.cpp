@@ -294,14 +294,13 @@ void ChatPage::getChannelList()
 
 void ChatPage::updateCurrentChatMessages()
 {
-    QString currentName = ui->chat_title->text();
 
     if(ui->tabWidget->currentIndex()==0)
-    getUserChat(currentName);
+    getUserChat(m_currentChatName);
     else if(ui->tabWidget->currentIndex()==1)
-    getChannelChat(currentName);
+    getChannelChat(m_currentChatName);
     else if(ui->tabWidget->currentIndex()==2)
-    getGroupChat(currentName);
+    getGroupChat(m_currentChatName);
 }
 
 
@@ -341,14 +340,16 @@ void ChatPage::getUserChat(QString item)
 
 
     ui->chat_title->setText("Loaing...");
-    QString m_dst = item;
-
-    ui->btn_sendMessage->show();
-    ui->input_message->show();
+      if(m_currentChatName!=item)
+      {
+         ui->chatsList->scrollToBottom();
+         ui->btn_sendMessage->show();
+         ui->input_message->show();
+      }
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QString date_param = (m_date != "") ? ("&date=" + m_date) : "";
-    QUrl url(QString(API_ADRESS)+"/getuserchats?token="+m_token+"&dst="+m_dst+date_param);
+    QUrl url(QString(API_ADRESS)+"/getuserchats?token="+m_token+"&dst="+item+date_param);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, [=]() mutable
@@ -420,7 +421,8 @@ void ChatPage::getUserChat(QString item)
                     }
 
                 }
-                  ui->chat_title->setText(m_dst);
+                  ui->chat_title->setText(item);
+                  m_currentChatName = item;
                 reply->deleteLater();
             });
 
@@ -460,14 +462,17 @@ void ChatPage::getGroupChat(QString item)
      }
 
     ui->chat_title->setText("Loaing...");
-    QString m_dst = item;
-    ui->btn_sendMessage->show();
-    ui->input_message->show();
+     if(m_currentChatName!=item)
+     {
+         ui->chatsList->scrollToBottom();
+         ui->btn_sendMessage->show();
+         ui->input_message->show();
+     }
 
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QString date_param = m_date != "" ? "&date=" + m_date : "";
-    QUrl url(QString(API_ADRESS)+"/getgroupchats?token="+m_token+"&dst="+m_dst+date_param);
+    QUrl url(QString(API_ADRESS)+"/getgroupchats?token="+m_token+"&dst="+item+date_param);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, [=]() mutable
@@ -536,7 +541,8 @@ void ChatPage::getGroupChat(QString item)
                     }
 
                 }
-                ui->chat_title->setText(m_dst);
+                ui->chat_title->setText(item);
+                m_currentChatName = item;
                 reply->deleteLater();
             });
 
@@ -572,14 +578,16 @@ void ChatPage::getChannelChat(QString item)
          qDebug() << err;
      }
     ui->chat_title->setText("Loaing...");
-    QString m_dst = item;
+     if(m_currentChatName!=item)
+    {
+    ui->chatsList->scrollToBottom();
     ui->btn_sendMessage->show();
     ui->input_message->show();
-
+     }
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
      QString date_param = m_date != "" ? "&date=" + m_date : "";
-    QUrl url(QString(API_ADRESS)+"/getchannelchats?token="+m_token+"&dst="+m_dst + date_param);
+    QUrl url(QString(API_ADRESS)+"/getchannelchats?token="+m_token+"&dst="+item + date_param);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, [=]() mutable
@@ -611,7 +619,7 @@ void ChatPage::getChannelChat(QString item)
                                 QString dst = block.value("dst").toString();
                                 QString date = block.value("date").toString();
                                   int msgLength = body.length();
-                                QString message = m_dst + " : " + body + "\n\n" + date ;
+                                QString message = item + " : " + body + "\n\n" + date ;
 
                                 try{
                                     DB::insertTblChats(src ,dst , body , QDateTime::fromString(date , "yyyy-MM-dd HH:mm:ss").toString("yyyyMMddHHmmss"));
@@ -648,7 +656,8 @@ void ChatPage::getChannelChat(QString item)
                     }
 
                 }
-                  ui->chat_title->setText(m_dst);
+                ui->chat_title->setText(item);
+                m_currentChatName = item;
                 reply->deleteLater();
             });
 

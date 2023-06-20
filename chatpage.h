@@ -61,6 +61,7 @@ private:
     UpdateThread* m_updateThread;
     int m_tabIndex;
     int m_selectedChatIndex{0};
+    QString m_currentChatName;
 
 
 };
