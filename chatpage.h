@@ -25,6 +25,7 @@ public:
     ~ChatPage();
 
 private slots:
+    void getChat(QString item , QString endpoint , int type);
     void on_messagesList_chat_itemClicked(QListWidgetItem* item);
     void getUserChat(QString item);
 
