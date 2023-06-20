@@ -51,6 +51,8 @@ private slots:
 
     void on_btn_scrollBottom_clicked();
 
+    void sendChatMessage(QString dst, QString body, QString date);
+
 private:
 
 private:

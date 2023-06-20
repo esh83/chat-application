@@ -723,199 +723,95 @@ void ChatPage::on_btn_logout_clicked()
 
 void ChatPage::on_btn_sendMessage_clicked()
 {
-    if(ui->input_message->text() == "")return;
-    ui->btn_sendMessage->setDisabled(true);
-    QString current_date = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
-    QString printable_date = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
+    if(ui->input_message->text() == "") return;
 
-    if(m_tabIndex==0)
-    {
+    QString dst = ui->chat_title->text();
+    QString body = ui->input_message->text();
+    QString date = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
 
-        QString m_dst = ui->chat_title->text();
-        QString m_body = ui->input_message->text();
-
-        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-        QUrl url(QString(API_ADRESS)+"/sendmessageuser?token="+m_token+"&dst="+m_dst+"&body="+m_body);
-        QNetworkRequest request(url);
-        QNetworkReply* reply = manager->get(request);
-
-        connect(reply, &QNetworkReply::finished, [=]() mutable
-                {
-                    if (reply->error() != QNetworkReply::NoError)
-                    {
-                        qDebug()<<"request error: " << reply->errorString();
-                    }
-                    else
-                    {
-                        QByteArray response = reply->readAll();
-                        qDebug()<<response;
-                        QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
-                        QJsonObject jsonObj = jsonDoc.object();
-                        QString code = jsonDoc.object().value("code").toString();
-
-                        if (code == "200")
-                        {
-                            try{
-                                 DB::insertTblChats(m_username ,m_dst , m_body ,current_date);
-                            }catch(QString &err){
-                                 qDebug() << err;
-                            }
-
-                            QString msg = m_username + " : " + m_body + "\n\n" + printable_date;
-                            QListWidgetItem *item = new QListWidgetItem( msg , ui->chatsList);
-                            item->setTextAlignment(Qt::AlignRight);
-                            item->setSizeHint(QSize(100 , 150));
-                            ui->input_message->clear();
-
-                        }
-                        else{
-                            qDebug() << "error";
-                        }
-
-                    }
-
-                    ui->btn_sendMessage->setDisabled(false);
-                    ui->chatsList->scrollToBottom();
-                    reply->deleteLater();
-                });
-
-
-    }
-    else if(m_tabIndex==1)
-    {
-
-        QString m_dst = ui->chat_title->text();
-        QString m_body = ui->input_message->text();
-
-        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-        QUrl url(QString(API_ADRESS)+"/sendmessagechannel?token="+m_token+"&dst="+m_dst+"&body="+m_body);
-        QNetworkRequest request(url);
-        QNetworkReply* reply = manager->get(request);
-
-        connect(reply, &QNetworkReply::finished, [=]() mutable
-                {
-                    if (reply->error() != QNetworkReply::NoError)
-                    {
-                        qDebug()<<"request error: " << reply->errorString();
-                    }
-                    else
-                    {
-                        QByteArray response = reply->readAll();
-                        qDebug()<<response;
-                        QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
-                        QJsonObject jsonObj = jsonDoc.object();
-                        QString code = jsonDoc.object().value("code").toString();
-
-                        if (code == "200")
-                        {
-                            try{
-                                DB::insertTblChats(m_username ,m_dst , m_body ,current_date);
-                            }catch(QString &err){
-                                qDebug() << err;
-                            }
-                            QString msg = m_username + " : " + m_body + "\n\n" + printable_date;
-                            QListWidgetItem *item = new QListWidgetItem( msg , ui->chatsList);
-                            item->setTextAlignment(Qt::AlignLeft);
-                            item->setSizeHint(QSize(100 , 150));
-                            ui->input_message->clear();
-
-                        }
-                        else if(code == "404"){
-                            ui->btn_sendMessage->hide();
-                            ui->input_message->hide();
-                            ui->input_message->clear();
-                            QMessageBox::warning(this ,"error" ,"you are not admin in this channel");
-                            qDebug() << "Admin error";
-                        }
-                        else
-                            qDebug() << "error";
-
-
-                    }
-
-                    ui->btn_sendMessage->setDisabled(false);
-                    ui->chatsList->scrollToBottom();
-                    reply->deleteLater();
-                });
-
-
-    }
-    else if(m_tabIndex==2)
-    {
-
-
-            QString m_dst = ui->chat_title->text();
-            QString m_body = ui->input_message->text();
-
-            QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-            QUrl url(QString(API_ADRESS)+"/sendmessagegroup?token="+m_token+"&dst="+m_dst+"&body="+m_body);
-            QNetworkRequest request(url);
-            QNetworkReply* reply = manager->get(request);
-
-            connect(reply, &QNetworkReply::finished, [=]() mutable
-                    {
-                        if (reply->error() != QNetworkReply::NoError)
-                        {
-                            qDebug()<<"request error: " << reply->errorString();
-                        }
-                        else
-                        {
-                            QByteArray response = reply->readAll();
-                            qDebug()<<response;
-                            QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
-                            QJsonObject jsonObj = jsonDoc.object();
-                            QString code = jsonDoc.object().value("code").toString();
-
-                            if (code == "200")
-                            {
-                                try{
-                                    DB::insertTblChats(m_username ,m_dst , m_body ,current_date);
-                                }catch(QString &err){
-                                    qDebug() << err;
-                                }
-                                 QString msg = m_username + " : " + m_body + "\n\n" + printable_date;
-                                QListWidgetItem *item = new QListWidgetItem( msg , ui->chatsList);
-                                item->setTextAlignment(Qt::AlignRight);
-                                item->setSizeHint(QSize(100 , 150));
-                                ui->input_message->clear();
-
-                            }
-                            else{
-                                qDebug() << "error";
-                            }
-
-                        }
-
-                        ui->btn_sendMessage->setDisabled(false);
-                        ui->chatsList->scrollToBottom();
-                        reply->deleteLater();
-                    });
-
-
-        }
-        else
-        {
-            QMessageBox::warning(this ,"error" ,"Error sending message");
-            qDebug() << "error";
-        }
-
+    sendChatMessage(dst, body, date);
 
 
 }
 
 
+void ChatPage::sendChatMessage(QString dst, QString body, QString date)
+{
+
+            ui->btn_sendMessage->setDisabled(true);
+
+            QString url;
+            if(m_tabIndex == 0){
+             url = QString(API_ADRESS)+"/sendmessageuser?token="+m_token+"&dst="+dst+"&body="+body;
+            } else if(m_tabIndex == 1){
+             url = QString(API_ADRESS)+"/sendmessagechannel?token="+m_token+"&dst="+dst+"&body="+body;
+            } else if(m_tabIndex == 2){
+             url = QString(API_ADRESS)+"/sendmessagegroup?token="+m_token+"&dst="+dst+"&body="+body;
+            } else {
+             QMessageBox::warning(this ,"error" ,"Error sending message");
+             qDebug() << "error";
+             return;
+            }
+
+            QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+            QUrl api_url(url);
+            QNetworkRequest request(api_url);
+            QNetworkReply* reply = manager->get(request);
+
+            connect(reply, &QNetworkReply::finished, [=]() mutable {
+                if (reply->error() != QNetworkReply::NoError) {
+                    qDebug()<<"request error: " << reply->errorString();
+                } else {
+                    QByteArray response = reply->readAll();
+                    qDebug()<<response;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
+                    QJsonObject jsonObj = jsonDoc.object();
+                    QString code = jsonDoc.object().value("code").toString();
+
+                    if (code == "200") {
+                        try {
+                            DB::insertTblChats(m_username ,dst , body ,date);
+                        } catch(QString &err){
+                            qDebug() << err;
+                        }
+
+                        QString msg = m_username + " : " + body + "\n\n" + QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
+                        QListWidgetItem *item = new QListWidgetItem(msg, ui->chatsList);
+                        item->setSizeHint(QSize(100 , 150));
+                        if(m_tabIndex == 0){
+                            item->setTextAlignment(Qt::AlignRight);
+                        } else {
+                            item->setTextAlignment(Qt::AlignLeft);
+                        }
+                        ui->input_message->clear();
+                    } else if(code == "404") {
+                        ui->btn_sendMessage->hide();
+                        ui->input_message->hide();
+                        ui->input_message->clear();
+                        QMessageBox::warning(this ,"error" ,"you are not admin in this channel");
+                        qDebug() << "Admin error";
+                    } else {
+                        qDebug() << "error";
+                    }
+                }
+
+                ui->btn_sendMessage->setDisabled(false);
+                ui->chatsList->scrollToBottom();
+
+                reply->deleteLater();
+            });
 
 
+}
 
 
 void ChatPage::on_tabWidget_currentChanged(int index)
 {
-    m_tabIndex = index ;
+            m_tabIndex = index ;
 }
 
 
 void ChatPage::on_btn_scrollBottom_clicked()
 {
-    ui->chatsList->scrollToBottom();
+            ui->chatsList->scrollToBottom();
 }
-
