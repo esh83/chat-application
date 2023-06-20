@@ -231,11 +231,12 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
         else
             item->setTextAlignment(Qt::AlignRight);
         item->setSizeHint(QSize(100 , 150));
-        last_date = (*it).date;
-    }
-    }catch(QString &err){
+        last_date =  QDateTime::fromString((*it).date , "yyyyMMddHHmmss").addSecs(1).toString("yyyyMMddHHmmss");
+          }
+
+     }  catch(QString &err){
     qDebug() << err;
-    }
+        }
 
 
 
