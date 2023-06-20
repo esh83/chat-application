@@ -98,212 +98,127 @@ ChatPage::~ChatPage()
 }
 //chats_list items
 
-void ChatPage::getUsersList()
+void ChatPage::getList(int chatType, QListWidget *listWidget, const QString &endpoint)
 {
-    ui->messagesList_chat->clear();
-    try{
-         QVector<DB::TableChatsList> list = DB::selectTblChatsList(PERSONAL_CHAT);
-         for(auto it = list.begin();it!=list.end();it++)
-             ui->messagesList_chat->addItem((*it).username);
-    }catch(QString &err){
-         qDebug() << err;
+
+
+    listWidget->clear();
+    try {
+    QVector<DB::TableChatsList> list = DB::selectTblChatsList(chatType);
+    for (auto it = list.begin(); it != list.end(); it++)
+        listWidget->addItem((*it).username);
+    }
+    catch (QString& err) {
+    qDebug() << err;
     }
 
-        if(m_tabIndex == 0)
-            ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    QUrl url(QString(API_ADRESS)+"/getuserlist?token="+m_token);
+    if (currentTab == chatType-1 && currentTab == m_tabIndex)
+    listWidget->setCurrentRow(m_selectedChatIndex);
+
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    QUrl url(QString(API_ADRESS) + endpoint + "?token=" + m_token);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, [=]() mutable
             {
                 if (reply->error() != QNetworkReply::NoError)
                 {
-                   ui->lbl_con_status->setText("you are offline");
+                    ui->lbl_con_status->setText("you are offline");
                     ui->lbl_con_status->setStyleSheet("background-color:rgba(255, 74, 74,0.6);color:white;font-weight:bold;padding:5px;");
-                    qDebug()<<"request error: " << reply->errorString();
+                    qDebug() << "request error: " << reply->errorString();
                 }
                 else
                 {
                     ui->lbl_con_status->setText("you are online");
                     ui->lbl_con_status->setStyleSheet("background-color:rgba(15, 184, 0,0.6);color:white;font-weight:bold;padding:5px;");
                     QByteArray response = reply->readAll();
-                    qDebug()<<response;
+                    qDebug() << response;
                     QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
                     QJsonObject jsonObj = jsonDoc.object();
                     QString code = jsonDoc.object().value("code").toString();
 
                     if (code == "200")
                     {
-                        ui->tabWidget->setCurrentIndex(m_tabIndex);
-                        ui->messagesList_chat->clear();
-                        DB::deleteTblChatsList(PERSONAL_CHAT);
+                        ui->tabWidget->setCurrentIndex(currentTab);
+                        listWidget->clear();
+                        DB::deleteTblChatsList(chatType);
 
-                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
-                            if(it.value().isObject()){
-                                QString username = it.value().toObject().value("src").toString();
-                                try{
-                                    DB::insertTblChatsList(username,"Jogn Doe",PERSONAL_CHAT);
-                                }catch(QString &err){
-                                    qDebug()<<err;
+                        for (auto it = jsonObj.begin(); it != jsonObj.end(); it++) {
+                            if (it.value().isObject()) {
+                                QString name;
+                                switch (chatType) {
+                                case PERSONAL_CHAT:
+                                    name = it.value().toObject().value("src").toString();
+                                    break;
+                                case GROUP_CHAT:
+                                    name = it.value().toObject().value("group_name").toString();
+                                    break;
+                                case CHANNEL_CHAT:
+                                    name = it.value().toObject().value("channel_name").toString();
+                                    break;
                                 }
 
+                                try {
+                                    DB::insertTblChatsList(name, "Jogn Doe", chatType);
+                                }
+                                catch (QString& err) {
+                                    qDebug() << err;
+                                }
 
-                                ui->messagesList_chat->addItem(username);
+                                listWidget->addItem(name);
                             }
-
                         }
                     }
-                    else{
+                    else {
                         qDebug() << "error";
                     }
 
                 }
-                if(m_tabIndex == 0)
-                    ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
+                if (currentTab == chatType-1 && currentTab == m_tabIndex)
+                    listWidget->setCurrentRow(m_selectedChatIndex);
+
                 reply->deleteLater();
             });
+
+
+}
+
+
+
+void ChatPage::getUsersList()
+{
+    getList(PERSONAL_CHAT, ui->messagesList_chat, "/getuserlist");
 
 }
 
 void ChatPage::getGroupList()
 {
 
-    ui->messagesList_group->clear();
-
-    try{
-            QVector<DB::TableChatsList> list = DB::selectTblChatsList(GROUP_CHAT);
-            for(auto it = list.begin();it!=list.end();it++)
-             ui->messagesList_group->addItem((*it).username);
-    }catch(QString &err){
-            qDebug() << err;
-    }
-    if(m_tabIndex == 2)
-            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    QUrl url(QString(API_ADRESS)+"/getgrouplist?token="+m_token);
-    QNetworkRequest request(url);
-    QNetworkReply* reply = manager->get(request);
-    connect(reply, &QNetworkReply::finished, [=]() mutable
-            {
-                if (reply->error() != QNetworkReply::NoError)
-                {
-                    qDebug()<<"request error: " << reply->errorString();
-                }
-                else
-                {
-                    QByteArray response = reply->readAll();
-                    qDebug()<<response;
-                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
-                    QJsonObject jsonObj = jsonDoc.object();
-                    QString code = jsonDoc.object().value("code").toString();
-
-                    if (code == "200")
-                    {
-                        ui->tabWidget->setCurrentIndex(m_tabIndex);
-                        ui->messagesList_group->clear();
-                        DB::deleteTblChatsList(GROUP_CHAT);
-
-                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
-                            if(it.value().isObject()){
-                                QString groupName = it.value().toObject().value("group_name").toString();
-                                try{
-                                    DB::insertTblChatsList(groupName,"Jogn Doe",GROUP_CHAT);
-                                }catch(QString &err){
-                                    qDebug()<<err;
-                                }
-                                ui->messagesList_group->addItem(groupName);
-                            }
-
-                        }
-                    }
-                    else{
-                        qDebug() << "error";
-                    }
-
-                }
-                if(m_tabIndex == 2)
-                ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
-                reply->deleteLater();
-            });
+    getList(GROUP_CHAT, ui->messagesList_group, "/getgrouplist");
 
 
 }
 
 void ChatPage::getChannelList()
 {
-    ui->messagesList_channel->clear();
-    try{
-            QVector<DB::TableChatsList> list = DB::selectTblChatsList(CHANNEL_CHAT);
-            for(auto it = list.begin();it!=list.end();it++)
-             ui->messagesList_channel->addItem((*it).username);
-    }catch(QString &err){
-            qDebug() << err;
-    }
-    if(m_tabIndex == 1)
-            ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    QUrl url(QString(API_ADRESS)+"/getchannellist?token="+m_token);
-    QNetworkRequest request(url);
-    QNetworkReply* reply = manager->get(request);
-    connect(reply, &QNetworkReply::finished, [=]() mutable
-            {
-                if (reply->error() != QNetworkReply::NoError)
-                {
-                    qDebug()<<"request error: " << reply->errorString();
-                }
-                else
-                {
-                    QByteArray response = reply->readAll();
-                    qDebug()<<response;
-                    QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
-                    QJsonObject jsonObj = jsonDoc.object();
-                    QString code = jsonDoc.object().value("code").toString();
-
-                    if (code == "200")
-                    {
-                        ui->tabWidget->setCurrentIndex(m_tabIndex);
-                        ui->messagesList_channel->clear();
-                        DB::deleteTblChatsList(CHANNEL_CHAT);
-                        for(auto it = jsonObj.begin() ; it != jsonObj.end(); it++){
-                            if(it.value().isObject()){
-                                QString channelName = it.value().toObject().value("channel_name").toString();
-                                try{
-                                    DB::insertTblChatsList(channelName,"Jogn Doe",CHANNEL_CHAT);
-                                }catch(QString &err){
-                                    qDebug()<<err;
-                                }
-                                ui->messagesList_channel->addItem(channelName);
-                            }
-
-                        }
-                    }
-                    else{
-                        qDebug() << "error";
-                    }
-
-                }
-                if(m_tabIndex == 1)
-                    ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
-
-                reply->deleteLater();
-            });
-
+    getList(CHANNEL_CHAT, ui->messagesList_channel, "/getchannellist");
 
 }
 
 void ChatPage::updateCurrentChatMessages()
 {
-
-    if(ui->tabWidget->currentIndex()==0)
+    m_currentChatName = ui->chat_title->text();
+    if(m_tabIndex==0)
     getUserChat(m_currentChatName);
-    else if(ui->tabWidget->currentIndex()==1)
+    else if(m_tabIndex==1)
     getChannelChat(m_currentChatName);
-    else if(ui->tabWidget->currentIndex()==2)
+    else if(m_tabIndex==2)
     getGroupChat(m_currentChatName);
 }
 
 
+
+//chats messages
 
 void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
 {
@@ -311,45 +226,43 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
     QString m_dst = item->text();
     m_selectedChatIndex = ui->messagesList_chat->currentRow();
     getUserChat(m_dst);
+    m_tabIndex = currentTab;
     ui->messagesList_channel->setCurrentRow(-1);
-     ui->messagesList_group->setCurrentRow(-1);
+    ui->messagesList_group->setCurrentRow(-1);
 
 }
-//chats messages
 void ChatPage::getUserChat(QString item)
 {
-       ui->chatsList->clear();
-      QString m_date = "";
-     try{
-        QVector<DB::TableChats> list = DB::selectTblChats(m_username , item);
-        for(auto it = list.begin();it!=list.end();it++){
-             QString msg = (*it).src + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
-             QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
-             if(m_username!=(*it).src)
-             item->setTextAlignment(Qt::AlignLeft);
-             else
-             item->setTextAlignment(Qt::AlignRight);
-             item->setSizeHint(QSize(100 , 150));
-             m_date = (*it).date;
-        }
+    ui->chatsList->clear();
+    QString m_date = "";
+    try{
+    QVector<DB::TableChats> list = DB::selectTblChats(m_username , item);
+    for(auto it = list.begin();it!=list.end();it++){
+        QString msg = (*it).src + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
+        QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
+        if(m_username!=(*it).src)
+            item->setTextAlignment(Qt::AlignLeft);
+        else
+            item->setTextAlignment(Qt::AlignRight);
+        item->setSizeHint(QSize(100 , 150));
+        m_date = (*it).date;
+    }
 
-       }catch(QString &err){
-         qDebug() << err;
-      }
+    }catch(QString &err){
+    qDebug() << err;
+    }
 
 
 
     ui->chat_title->setText("Loaing...");
-      if(m_currentChatName!=item)
-      {
-         ui->chatsList->scrollToBottom();
-         ui->btn_sendMessage->show();
-         ui->input_message->show();
-      }
+    QString m_dst = item;
+
+    ui->btn_sendMessage->show();
+    ui->input_message->show();
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QString date_param = (m_date != "") ? ("&date=" + m_date) : "";
-    QUrl url(QString(API_ADRESS)+"/getuserchats?token="+m_token+"&dst="+item+date_param);
+    QUrl url(QString(API_ADRESS)+"/getuserchats?token="+m_token+"&dst="+m_dst+date_param);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, [=]() mutable
@@ -381,7 +294,7 @@ void ChatPage::getUserChat(QString item)
                                 QString src = block.value("src").toString();
                                 QString dst = block.value("dst").toString();
                                 QString date = block.value("date").toString();
-                                  int msgLength = body.length();
+                                int msgLength = body.length();
                                 QString message = src + " : " + body + "\n\n" + date;
 
                                 try{
@@ -421,8 +334,7 @@ void ChatPage::getUserChat(QString item)
                     }
 
                 }
-                  ui->chat_title->setText(item);
-                  m_currentChatName = item;
+                ui->chat_title->setText(m_dst);
                 reply->deleteLater();
             });
 
@@ -433,46 +345,44 @@ void ChatPage::getUserChat(QString item)
 void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
 {
     QString m_dst = item->text();
-     m_selectedChatIndex = ui->messagesList_group->currentRow();
-   getGroupChat(m_dst);
-     ui->messagesList_channel->setCurrentRow(-1);
-     ui->messagesList_chat->setCurrentRow(-1);
+    m_selectedChatIndex = ui->messagesList_group->currentRow();
+    m_tabIndex = currentTab;
+    getGroupChat(m_dst);
+    ui->messagesList_channel->setCurrentRow(-1);
+    ui->messagesList_chat->setCurrentRow(-1);
 
 }
 
 void ChatPage::getGroupChat(QString item)
 {
-     ui->chatsList->clear();
-     QString m_date = "";
-     try{
-         QVector<DB::TableChats> list = DB::selectTblChats(m_username , item);
-         for(auto it = list.begin();it!=list.end();it++){
-             QString msg = (*it).src + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
-             QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
-             if(m_username!=(*it).src)
-             item->setTextAlignment(Qt::AlignLeft);
-             else
-             item->setTextAlignment(Qt::AlignRight);
-             item->setSizeHint(QSize(100 , 150));
-             m_date = (*it).date;
-         }
+    ui->chatsList->clear();
+    QString m_date = "";
+    try{
+    QVector<DB::TableChats> list = DB::selectTblChats(m_username , item);
+    for(auto it = list.begin();it!=list.end();it++){
+        QString msg = (*it).src + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
+        QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
+        if(m_username!=(*it).src)
+            item->setTextAlignment(Qt::AlignLeft);
+        else
+            item->setTextAlignment(Qt::AlignRight);
+        item->setSizeHint(QSize(100 , 150));
+        m_date = (*it).date;
+    }
 
-     }catch(QString &err){
-         qDebug() << err;
-     }
+    }catch(QString &err){
+    qDebug() << err;
+    }
 
     ui->chat_title->setText("Loaing...");
-     if(m_currentChatName!=item)
-     {
-         ui->chatsList->scrollToBottom();
-         ui->btn_sendMessage->show();
-         ui->input_message->show();
-     }
+    QString m_dst = item;
+    ui->btn_sendMessage->show();
+    ui->input_message->show();
 
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QString date_param = m_date != "" ? "&date=" + m_date : "";
-    QUrl url(QString(API_ADRESS)+"/getgroupchats?token="+m_token+"&dst="+item+date_param);
+    QUrl url(QString(API_ADRESS)+"/getgroupchats?token="+m_token+"&dst="+m_dst+date_param);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, [=]() mutable
@@ -491,7 +401,7 @@ void ChatPage::getGroupChat(QString item)
 
                     if (code == "200")
                     {
-                          ui->chatsList->clear();
+                        ui->chatsList->clear();
                         QString message = jsonObj.value("message").toString();
                         int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
 
@@ -503,7 +413,7 @@ void ChatPage::getGroupChat(QString item)
                                 QString src = block.value("src").toString();
                                 QString dst = block.value("dst").toString();
                                 QString date = block.value("date").toString();
-                                 int msgLength = body.length();
+                                int msgLength = body.length();
                                 QString message = src + " : " + body +"\n\n" + date ;
 
                                 try{
@@ -541,8 +451,7 @@ void ChatPage::getGroupChat(QString item)
                     }
 
                 }
-                ui->chat_title->setText(item);
-                m_currentChatName = item;
+                ui->chat_title->setText(m_dst);
                 reply->deleteLater();
             });
 
@@ -553,41 +462,40 @@ void ChatPage::getGroupChat(QString item)
 void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 {
     QString m_dst = item->text();
-     m_selectedChatIndex = ui->messagesList_channel->currentRow();
+    m_selectedChatIndex = ui->messagesList_channel->currentRow();
+    m_tabIndex = currentTab;
     getChannelChat(m_dst);
-     ui->messagesList_chat->setCurrentRow(-1);
-     ui->messagesList_group->setCurrentRow(-1);
+    ui->messagesList_chat->setCurrentRow(-1);
+    ui->messagesList_group->setCurrentRow(-1);
 
 }
 
 void ChatPage::getChannelChat(QString item)
 {
-     ui->chatsList->clear();
-     QString m_date = "";
-     try{
-         QVector<DB::TableChats> list = DB::selectTblChats("*" , item);
-         for(auto it = list.begin();it!=list.end();it++){
-             QString msg = (*it).dst + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
-             QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
-             item->setTextAlignment(Qt::AlignLeft);
-             item->setSizeHint(QSize(100 , 150));
-             m_date = (*it).date;
-         }
+    ui->chatsList->clear();
+    QString m_date = "";
+    try{
+    QVector<DB::TableChats> list = DB::selectTblChats("*" , item);
+    for(auto it = list.begin();it!=list.end();it++){
+        QString msg = (*it).dst + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
+        QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
+        item->setTextAlignment(Qt::AlignLeft);
+        item->setSizeHint(QSize(100 , 150));
+        m_date = (*it).date;
+    }
 
-     }catch(QString &err){
-         qDebug() << err;
-     }
+    }catch(QString &err){
+    qDebug() << err;
+    }
     ui->chat_title->setText("Loaing...");
-     if(m_currentChatName!=item)
-    {
-    ui->chatsList->scrollToBottom();
+    QString m_dst = item;
     ui->btn_sendMessage->show();
     ui->input_message->show();
-     }
+
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-     QString date_param = m_date != "" ? "&date=" + m_date : "";
-    QUrl url(QString(API_ADRESS)+"/getchannelchats?token="+m_token+"&dst="+item + date_param);
+    QString date_param = m_date != "" ? "&date=" + m_date : "";
+    QUrl url(QString(API_ADRESS)+"/getchannelchats?token="+m_token+"&dst="+m_dst + date_param);
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, [=]() mutable
@@ -618,8 +526,8 @@ void ChatPage::getChannelChat(QString item)
                                 QString src = block.value("src").toString();
                                 QString dst = block.value("dst").toString();
                                 QString date = block.value("date").toString();
-                                  int msgLength = body.length();
-                                QString message = item + " : " + body + "\n\n" + date ;
+                                int msgLength = body.length();
+                                QString message = m_dst + " : " + body + "\n\n" + date ;
 
                                 try{
                                     DB::insertTblChats(src ,dst , body , QDateTime::fromString(date , "yyyy-MM-dd HH:mm:ss").toString("yyyyMMddHHmmss"));
@@ -641,7 +549,7 @@ void ChatPage::getChannelChat(QString item)
                                 QString msg = (*it).dst + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
                                 QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
 
-                                 item->setTextAlignment(Qt::AlignLeft);
+                                item->setTextAlignment(Qt::AlignLeft);
                                 item->setSizeHint(QSize(100 , 150));
                                 m_date = (*it).date;
                             }
@@ -656,13 +564,13 @@ void ChatPage::getChannelChat(QString item)
                     }
 
                 }
-                ui->chat_title->setText(item);
-                m_currentChatName = item;
+                ui->chat_title->setText(m_dst);
                 reply->deleteLater();
             });
 
 
 }
+
 
 
 
@@ -778,7 +686,7 @@ void ChatPage::sendChatMessage(QString dst, QString body, QString date)
                         QString msg = m_username + " : " + body + "\n\n" + QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
                         QListWidgetItem *item = new QListWidgetItem(msg, ui->chatsList);
                         item->setSizeHint(QSize(100 , 150));
-                        if(m_tabIndex == 0){
+                        if(m_tabIndex == 0 || m_tabIndex == 2){
                             item->setTextAlignment(Qt::AlignRight);
                         } else {
                             item->setTextAlignment(Qt::AlignLeft);
@@ -805,9 +713,10 @@ void ChatPage::sendChatMessage(QString dst, QString body, QString date)
 }
 
 
+
 void ChatPage::on_tabWidget_currentChanged(int index)
 {
-            m_tabIndex = index ;
+            currentTab = index ;
 }
 
 

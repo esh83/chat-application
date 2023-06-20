@@ -53,6 +53,9 @@ private slots:
 
     void sendChatMessage(QString dst, QString body, QString date);
 
+    void getList(int chatType, QListWidget* listWidget, const QString& endpoint);
+
+
 private:
 
 private:
@@ -62,6 +65,7 @@ private:
     QString m_password;
     UpdateThread* m_updateThread;
     int m_tabIndex;
+    int currentTab{0};
     int m_selectedChatIndex{0};
     QString m_currentChatName;
 
