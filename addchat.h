@@ -15,6 +15,11 @@ public:
     explicit AddChat(QWidget *parent = nullptr);
     ~AddChat();
 
+private slots:
+    void on_btn_creat_clicked();
+
+    void on_btn_creat_cancel_clicked();
+
 private:
     Ui::AddChat *ui;
 };

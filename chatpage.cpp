@@ -9,7 +9,7 @@
 #include <QTimer>
 #include <QVector>
 #include <QDateTime>
-
+#include "addchat.h"
 QString message_list_styles = "QListWidget#%1{"
                   "background-color:white;"
                   "border:none;"
@@ -442,4 +442,30 @@ void ChatPage::on_btn_logout_clicked()
     req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
 }
 
+
+
+void ChatPage::on_pushButton_8_clicked()
+{
+
+    AddChat *addChat = new AddChat(this);
+
+    addChat->show();
+
+}
+
+
+void ChatPage::on_pushButton_7_clicked()
+{
+    AddChat *addChat = new AddChat(this);
+
+    addChat->show();
+}
+
+
+void ChatPage::on_pushButton_5_clicked()
+{
+    AddChat *addChat = new AddChat(this);
+
+    addChat->show();
+}
 

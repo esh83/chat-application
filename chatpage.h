@@ -58,6 +58,12 @@ private slots:
     void getList(int chatType, QListWidget* listWidget, const QString& endpoint);
 
 
+    void on_pushButton_8_clicked();
+
+    void on_pushButton_7_clicked();
+
+    void on_pushButton_5_clicked();
+
 private:
 
 private:
