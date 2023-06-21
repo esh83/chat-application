@@ -461,21 +461,35 @@ background-color:white;</string>
   <widget class="QPushButton" name="btn_scrollBottom">
    <property name="geometry">
     <rect>
-     <x>900</x>
-     <y>450</y>
-     <width>51</width>
-     <height>51</height>
+     <x>914</x>
+     <y>472</y>
+     <width>50</width>
+     <height>50</height>
     </rect>
    </property>
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color:red;
-color:white;</string>
+    <string notr="true">background-color:transparent;
+border : none;
+outline: none;
+padding:10px;
+color : white;
+</string>
    </property>
    <property name="text">
-    <string>bottom</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="source.qrc">
+     <normaloff>:/src/img/scrol down.png</normaloff>:/src/img/scrol down.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>25</width>
+     <height>25</height>
+    </size>
    </property>
   </widget>
   <widget class="QLabel" name="lbl_con_status">
