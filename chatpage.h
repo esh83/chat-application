@@ -57,12 +57,7 @@ private slots:
 
     void getList(int chatType, QListWidget* listWidget, const QString& endpoint);
 
-
-    void on_pushButton_8_clicked();
-
-    void on_pushButton_7_clicked();
-
-    void on_pushButton_5_clicked();
+    void on_btn_new_channel_clicked();
 
 private:
 

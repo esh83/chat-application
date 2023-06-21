@@ -26,7 +26,7 @@
     <string notr="true">background-color: #5683A4;</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btn_creat_cancel">
+  <widget class="QPushButton" name="btn_cancel">
    <property name="geometry">
     <rect>
      <x>430</x>
@@ -50,7 +50,7 @@ padding : 15px 0;</string>
     <string>Cancel</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btn_creat">
+  <widget class="QPushButton" name="btn_create">
    <property name="geometry">
     <rect>
      <x>180</x>
@@ -71,7 +71,7 @@ font-weight:bold;
 padding : 15px 0;</string>
    </property>
    <property name="text">
-    <string>Creat</string>
+    <string>Create</string>
    </property>
   </widget>
   <widget class="QWidget" name="loginForm" native="true">
@@ -145,7 +145,7 @@ background-color:white;</string>
      <string>name</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="name_chat">
+   <widget class="QLineEdit" name="input_chat_name">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -158,14 +158,14 @@ background-color:white;</string>
      <enum>Qt::ClickFocus</enum>
     </property>
     <property name="styleSheet">
-     <string notr="true">#input_login_username
+     <string notr="true">#input_chat_name
 {
 outline:none;
 border:none;
 border-bottom:1px solid lightgray;
 background-color: white;
 }
-#input_login_username:focus
+#input_chat_name:focus
 {
 border-bottom:1px solid #40ABE3;
 }</string>
@@ -174,8 +174,8 @@ border-bottom:1px solid #40ABE3;
   </widget>
   <zorder>widget</zorder>
   <zorder>loginForm</zorder>
-  <zorder>btn_creat</zorder>
-  <zorder>btn_creat_cancel</zorder>
+  <zorder>btn_create</zorder>
+  <zorder>btn_cancel</zorder>
  </widget>
  <resources/>
  <connections/>

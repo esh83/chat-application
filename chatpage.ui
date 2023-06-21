@@ -121,6 +121,9 @@ color : white;
       <height>50</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
 border : none;
@@ -174,7 +177,7 @@ color : white;
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_8">
+   <widget class="QPushButton" name="btn_new_channel">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -182,6 +185,12 @@ color : white;
       <width>48</width>
       <height>50</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="toolTip">
+     <string>join channel</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
