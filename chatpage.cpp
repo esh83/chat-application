@@ -446,7 +446,7 @@ void ChatPage::on_btn_logout_clicked()
 
 void ChatPage::on_pushButton_8_clicked()
 {
-
+  ui->pushButton_8->setDisabled(true);
     AddChat *addChat = new AddChat(this);
 
     addChat->show();
@@ -456,16 +456,22 @@ void ChatPage::on_pushButton_8_clicked()
 
 void ChatPage::on_pushButton_7_clicked()
 {
+ ui->pushButton_7->setDisabled(true);
     AddChat *addChat = new AddChat(this);
 
     addChat->show();
+      ui->pushButton_7->setDisabled(false);
+
 }
 
 
 void ChatPage::on_pushButton_5_clicked()
 {
+ ui->pushButton_5->setDisabled(true);
     AddChat *addChat = new AddChat(this);
 
     addChat->show();
+
+      ui->pushButton_5->setDisabled(false);
 }
 

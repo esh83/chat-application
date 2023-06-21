@@ -30,6 +30,9 @@ void AddChat::on_btn_creat_clicked()
 void AddChat::on_btn_creat_cancel_clicked()
 {
      ui->btn_creat_cancel->setDisabled(true);
+
+
+
     this->close();
 
 
