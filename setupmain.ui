@@ -35,7 +35,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="startPage">
     <property name="styleSheet">
@@ -54,7 +54,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="source.qrc">:/src/img/tel-banner1.jpg</pixmap>
+      <pixmap resource="source.qrc">:/src/img/tel-banner1.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
