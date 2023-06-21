@@ -16,14 +16,13 @@ AddChat::~AddChat()
 
 void AddChat::on_btn_create_clicked()
 {
-    ui->btn_create->setDisabled(true);
-    ui->btn_create->setText("Creating ...");
+
     if(ui->input_chat_name->text().isEmpty()){
         QMessageBox::warning(this, "Warning", "Please enter name!");
         return;
     }
     ui->btn_create->setDisabled(true);
-    ui->btn_create->setText("Loading ...");
+    ui->btn_create->setText("Creating ...");
     QString name_chat= ui->input_chat_name->text();
     RequestHandler *req_hadler = new RequestHandler(this);
     connect(req_hadler,&RequestHandler::errorOccured,[=](QString err){
@@ -56,7 +55,6 @@ void AddChat::on_btn_create_clicked()
 
 void AddChat::on_btn_cancel_clicked()
 {
-    ui->btn_cancel->setDisabled(true);
     this->close();
 }
 
