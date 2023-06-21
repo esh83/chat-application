@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    addchat.cpp \
     chatpage.cpp \
     main.cpp \
     queries.cpp \
@@ -16,6 +17,7 @@ SOURCES += \
     setupmain.cpp
 
 HEADERS += \
+    addchat.h \
     chatpage.h \
     config.h \
     queries.h \
@@ -24,6 +26,7 @@ HEADERS += \
     updateThread.h
 
 FORMS += \
+    addchat.ui \
     chatpage.ui \
     setupmain.ui
 

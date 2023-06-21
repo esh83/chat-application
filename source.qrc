@@ -13,5 +13,6 @@
         <file>img/plus.png</file>
         <file>img/serch.png</file>
         <file>img/settings.png</file>
+        <file>img/chat.png</file>
     </qresource>
 </RCC>
