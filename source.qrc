@@ -15,5 +15,6 @@
         <file>img/settings.png</file>
         <file>img/chat.png</file>
         <file>img/grup.png</file>
+        <file>img/chanel.png</file>
     </qresource>
 </RCC>
