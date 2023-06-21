@@ -14,5 +14,6 @@
         <file>img/serch.png</file>
         <file>img/settings.png</file>
         <file>img/chat.png</file>
+        <file>img/grup.png</file>
     </qresource>
 </RCC>
