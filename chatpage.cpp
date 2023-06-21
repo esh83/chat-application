@@ -94,6 +94,7 @@ ChatPage::~ChatPage()
 }
 
 //A FUNCTION TO GET LIST OF CHATS
+
 void ChatPage::getList(int chatType, QListWidget *listWidget, const QString &endpoint)
 {
     listWidget->clear();
@@ -107,7 +108,7 @@ void ChatPage::getList(int chatType, QListWidget *listWidget, const QString &end
     qDebug() << err;
     }
 
-    if (currentTab == chatType-1 && currentTab == m_tabIndex)
+    if (m_selectedChatIndex!=-1 && currentTab == chatType-1 && currentTab == m_tabIndex)
     listWidget->setCurrentRow(m_selectedChatIndex);
     //GET LIST FROM API
     RequestHandler *req_handler = new RequestHandler(this);
@@ -155,11 +156,11 @@ void ChatPage::getList(int chatType, QListWidget *listWidget, const QString &end
         else {
             qDebug() << "error";
         }
+        if (m_selectedChatIndex!=-1 && currentTab == chatType-1 && currentTab == m_tabIndex)
+            listWidget->setCurrentRow(m_selectedChatIndex);
     });
     req_handler->fetchData(QString(API_ADRESS) + endpoint + "?token=" + m_token);
 }
-
-
 
 void ChatPage::getUsersList()
 {
@@ -169,20 +170,19 @@ void ChatPage::getUsersList()
 
 void ChatPage::getGroupList()
 {
-
     getList(GROUP_CHAT, ui->messagesList_group, "/getgrouplist");
-
-
 }
 
 void ChatPage::getChannelList()
 {
     getList(CHANNEL_CHAT, ui->messagesList_channel, "/getchannellist");
-
 }
+
+//A FUNCTION TO GET CHATS MESSAGES
 
 void ChatPage::updateCurrentChatMessages()
 {
+    if(ui->chat_title->text()!= "updating ...")
     m_currentChatName = ui->chat_title->text();
     if(m_tabIndex==0)
     getUserChat(m_currentChatName);
@@ -192,17 +192,16 @@ void ChatPage::updateCurrentChatMessages()
     getGroupChat(m_currentChatName);
 }
 
-//A FUNCTION TO GET CHATS MESSAGES
 void ChatPage::getChat(QString item , QString endpoint , int type){
     ui->chatsList->clear();
     QString last_date = "";
     //READ MESSAGES FROM LOCAL DATABASE
     try{
-    QVector<DB::TableChats> list = DB::selectTblChats(type == CHANNEL_CHAT ? "*": m_username , item);
+    QVector<DB::TableChats> list = DB::selectTblChats(type != PERSONAL_CHAT ? "*": m_username , item);
     for(auto it = list.begin();it!=list.end();it++){
         QString msg = (type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
         QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
-        if(m_username!=(*it).src)
+        if(m_username!=(*it).src || type == CHANNEL_CHAT)
             item->setTextAlignment(Qt::AlignLeft);
         else
             item->setTextAlignment(Qt::AlignRight);
@@ -229,7 +228,6 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
         {
             QString message = jsonObj.value("message").toString();
             int numberOfMessages = message.mid(message.indexOf("-")+1, message.lastIndexOf("-")-message.indexOf("-")-1).toInt();
-
             for (int i =0 ; i< numberOfMessages ; ++i) {
 
                 QString key = "block " + QString::number(i);
@@ -251,11 +249,11 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
             ui->chatsList->clear();
             //READ MESSAGES FROM LOCAL DATABASE
             try{
-                QVector<DB::TableChats> list = DB::selectTblChats(type == CHANNEL_CHAT ? "*": m_username , item);
+                QVector<DB::TableChats> list = DB::selectTblChats(type != PERSONAL_CHAT ? "*": m_username , item);
                 for(auto it = list.begin();it!=list.end();it++){
                     QString msg = (type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
                     QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
-                    if(m_username!=(*it).src)
+                    if(m_username!=(*it).src || type == CHANNEL_CHAT)
                         item->setTextAlignment(Qt::AlignLeft);
                     else
                         item->setTextAlignment(Qt::AlignRight);
@@ -278,116 +276,78 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
 
 }
 
-void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
-{
-    m_selectedChatIndex = ui->messagesList_chat->currentRow();
-    getUserChat(item->text());
-    m_tabIndex = currentTab;
-    ui->messagesList_channel->setCurrentRow(-1);
-    ui->messagesList_group->setCurrentRow(-1);
-
-}
-
-
 void ChatPage::getUserChat(QString item)
 {
     getChat(item,"getuserchats",PERSONAL_CHAT);
 }
 
-
-void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
+void ChatPage::getChannelChat(QString item)
 {
-    m_selectedChatIndex = ui->messagesList_group->currentRow();
-    m_tabIndex = currentTab;
-    getGroupChat(item->text());
-    ui->messagesList_channel->setCurrentRow(-1);
-    ui->messagesList_chat->setCurrentRow(-1);
-
+    getChat(item,"getchannelchats",CHANNEL_CHAT);
 }
 
 void ChatPage::getGroupChat(QString item)
 {
-  getChat(item,"getgroupchats",GROUP_CHAT);
+    getChat(item,"getgroupchats",GROUP_CHAT);
 }
 
+void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
+{
+    m_selectedChatIndex = ui->messagesList_chat->currentRow();
+    getUserChat(item->text());
+    m_tabIndex = currentTab;
+    m_currentChatName = item->text();
+    ui->messagesList_channel->setCurrentRow(-1);
+    ui->messagesList_group->setCurrentRow(-1);
+
+}
 
 void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 {
     m_selectedChatIndex = ui->messagesList_channel->currentRow();
     m_tabIndex = currentTab;
+    m_currentChatName = item->text();
     getChannelChat(item->text());
     ui->messagesList_chat->setCurrentRow(-1);
     ui->messagesList_group->setCurrentRow(-1);
 
 }
 
-void ChatPage::getChannelChat(QString item)
+void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
 {
-   getChat(item,"getchannelchats",CHANNEL_CHAT);
+    m_selectedChatIndex = ui->messagesList_group->currentRow();
+    m_tabIndex = currentTab;
+    m_currentChatName = item->text();
+    m_currentChatName = item->text();
+    getGroupChat(item->text());
+    ui->messagesList_channel->setCurrentRow(-1);
+    ui->messagesList_chat->setCurrentRow(-1);
 
 }
 
-void ChatPage::on_btn_logout_clicked()
-{
-    ui->btn_logout->setDisabled(true);
-   RequestHandler *req_handler = new RequestHandler(this);
-   connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
-       qDebug()<<err;
-       QMessageBox::warning(this ,"error" ,"something went wrong");
-       ui->btn_logout->setDisabled(false);
-   });
-   connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
-       QString message = jsonObj.value("message").toString();
-       QString code = jsonObj.value("code").toString();
-       if (code == "200")
-       {
-           //RESET LOCAL DATABASE
-           DB::emptyTblInfo();
-           DB::emptyTblChatsList();
-           DB::emptyTblChats();
-           //CLOSE THE CHAT PAGE
-           this->accept();
-       }
-       else{
-           QMessageBox::warning(this ,"error" ,message);
-       }
-       ui->btn_logout->setDisabled(false);
-
-   });
-   req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
-}
-
-
-void ChatPage::on_btn_sendMessage_clicked()
-{
-    if(ui->input_message->text() == "") return;
-    QString dst = ui->chat_title->text();
-    QString body = ui->input_message->text();
-    QString date = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
-    sendChatMessage(dst, body, date);
-}
-
+//A FUNCTION TO SEND MESSAGES
 
 void ChatPage::sendChatMessage(QString dst, QString body, QString date)
 {
-     ui->btn_sendMessage->setDisabled(true);
-     QString url;
-     if(m_tabIndex == 0){
-     url = QString(API_ADRESS)+"/sendmessageuser?token="+m_token+"&dst="+dst+"&body="+body;
-     } else if(m_tabIndex == 1){
-     url = QString(API_ADRESS)+"/sendmessagechannel?token="+m_token+"&dst="+dst+"&body="+body;
-     } else if(m_tabIndex == 2){
-     url = QString(API_ADRESS)+"/sendmessagegroup?token="+m_token+"&dst="+dst+"&body="+body;
-     } else {
-     QMessageBox::warning(this ,"error" ,"Error sending message");
-     qDebug() << "error";
-     return;
-     }
+    ui->btn_sendMessage->setDisabled(true);
+    QString url;
+    if(m_tabIndex == 0){
+           url = QString(API_ADRESS)+"/sendmessageuser?token="+m_token+"&dst="+dst+"&body="+body;
+    } else if(m_tabIndex == 1){
+           url = QString(API_ADRESS)+"/sendmessagechannel?token="+m_token+"&dst="+dst+"&body="+body;
+    } else if(m_tabIndex == 2){
+           url = QString(API_ADRESS)+"/sendmessagegroup?token="+m_token+"&dst="+dst+"&body="+body;
+    } else {
+           QMessageBox::warning(this ,"error" ,"Error sending message");
+           qDebug() << "error";
+           return;
+    }
+
 
     RequestHandler *req_handler = new RequestHandler(this);
     connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
-         qDebug()<<err;
-       ui->btn_sendMessage->setDisabled(false);
+        qDebug()<<err;
+        ui->btn_sendMessage->setDisabled(false);
     });
     connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
         QString code = jsonObj.value("code").toString();
@@ -398,8 +358,12 @@ void ChatPage::sendChatMessage(QString dst, QString body, QString date)
             } catch(QString &err){
                 qDebug() << err;
             }
+            QString msg;
+            if(m_tabIndex!=1)
+             msg = m_username + " : " + body + "\n\n" + QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
+            else
+             msg = dst + " : " + body + "\n\n" + QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
 
-            QString msg = m_username + " : " + body + "\n\n" + QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
             QListWidgetItem *item = new QListWidgetItem(msg, ui->chatsList);
             item->setSizeHint(QSize(100 , 150));
             if(m_tabIndex == 0 || m_tabIndex == 2){
@@ -415,22 +379,67 @@ void ChatPage::sendChatMessage(QString dst, QString body, QString date)
         } else {
             qDebug() << "error";
         }
-         ui->btn_sendMessage->setDisabled(false);
-         ui->chatsList->scrollToBottom();
+        ui->btn_sendMessage->setDisabled(false);
+        ui->chatsList->scrollToBottom();
     });
     req_handler->fetchData(url);
 
 }
 
+void ChatPage::on_btn_sendMessage_clicked()
+{
+    if(ui->input_message->text() == "" || m_currentChatName== "") return;
+    QString dst =m_currentChatName;
+    QString body = ui->input_message->text();
+    QString date = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
+    sendChatMessage(dst, body, date);
+}
 
 
 void ChatPage::on_tabWidget_currentChanged(int index)
 {
     currentTab = index ;
+    if (index==0 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
+           ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
+    else if (index==1 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
+           ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
+    else if (index==2 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
+           ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
 }
-
 
 void ChatPage::on_btn_scrollBottom_clicked()
 {
     ui->chatsList->scrollToBottom();
 }
+
+void ChatPage::on_btn_logout_clicked()
+{
+    ui->btn_logout->setDisabled(true);
+    RequestHandler *req_handler = new RequestHandler(this);
+    connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
+        qDebug()<<err;
+        QMessageBox::warning(this ,"error" ,"something went wrong");
+        ui->btn_logout->setDisabled(false);
+    });
+    connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
+        QString message = jsonObj.value("message").toString();
+        QString code = jsonObj.value("code").toString();
+        if (code == "200")
+        {
+            //RESET LOCAL DATABASE
+            DB::emptyTblInfo();
+            DB::emptyTblChatsList();
+            DB::emptyTblChats();
+            //CLOSE THE CHAT PAGE
+            this->accept();
+        }
+        else{
+            QMessageBox::warning(this ,"error" ,message);
+        }
+        ui->btn_logout->setDisabled(false);
+
+    });
+    req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
+}
+
+
