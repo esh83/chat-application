@@ -81,7 +81,7 @@ color : white;
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_5">
+   <widget class="QPushButton" name="btn_new_chat">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -146,7 +146,7 @@ color : white;
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_7">
+   <widget class="QPushButton" name="btn_new_group">
     <property name="geometry">
      <rect>
       <x>20</x>
