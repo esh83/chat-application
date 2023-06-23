@@ -395,6 +395,28 @@ void ChatPage::on_btn_sendMessage_clicked()
     sendChatMessage(dst, body, date);
 }
 
+//FUNCTIONS TO CREATE CHATS
+
+void ChatPage::on_btn_new_chat_clicked()
+{
+    AddChat newChat(m_token,PERSONAL_CHAT,"/sendmessageuser");
+    newChat.exec();
+}
+
+void ChatPage::on_btn_new_channel_clicked()
+{
+    AddChat newChannel(m_token,CHANNEL_CHAT,"/createchannel");
+    newChannel.exec();
+}
+
+void ChatPage::on_btn_new_group_clicked()
+{
+    AddChat newGroup(m_token,GROUP_CHAT,"/creategroup");
+    newGroup.exec();
+}
+
+
+//ANOTHER FUNCTIONS
 
 void ChatPage::on_tabWidget_currentChanged(int index)
 {
@@ -405,6 +427,13 @@ void ChatPage::on_tabWidget_currentChanged(int index)
            ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
     else if (index==2 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
+
+    if(currentTab==0)
+           getUsersList();
+    else if(currentTab==1)
+           getChannelList();
+    else
+           getGroupList();
 }
 
 void ChatPage::on_btn_scrollBottom_clicked()
@@ -440,13 +469,5 @@ void ChatPage::on_btn_logout_clicked()
 
     });
     req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
-}
-
-
-
-void ChatPage::on_btn_new_channel_clicked()
-{
-    AddChat newChannel(m_token);
-    newChannel.exec();
 }
 
