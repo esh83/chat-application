@@ -88,7 +88,7 @@ void AddChat::on_btn_create_clicked()
 
     if(m_chatType==2 || m_chatType==3)
     {
-        QString title = (ui->input_chat_title->text() != "") ? ("group_title=" + ui->input_chat_title->text()) : "";
+        QString title = (m_chatType == 3) ? ("&group_title=" + ui->input_chat_title->text()) : ("&channel_title=" + ui->input_chat_title->text());
         QString type_name = (m_chatType == 3) ? ("&group_name=") : "&channel_name=";
         req_hadler->fetchData(QString(API_ADRESS)+m_endpoint+"?token="+ m_token +type_name+ name_chat+title);
     }
