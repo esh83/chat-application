@@ -54,12 +54,12 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     ui->chatsList->setStyleSheet(
         "QListWidget#chatsList{"
         "background-image: url(:/src/img/pattern-2.jpg);"
-        " background-repeat: no-repeat;"
+        "background-repeat: no-repeat;"
         "background-attachment: fixed;"
         "border:1px solid #324D6A;"
         "outline:none;"
-
-        "padding:20px 0px"
+        "padding-top:30px;"
+        "padding-bottom:15px;"
         "}"
         "QListWidget#chatsList::item {"
         "padding:20px;"
@@ -205,7 +205,6 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
             item->setTextAlignment(Qt::AlignLeft);
         else
             item->setTextAlignment(Qt::AlignRight);
-        item->setSizeHint(QSize(100 , 150));
         last_date =  QDateTime::fromString((*it).date , "yyyyMMddHHmmss").addSecs(2).toString("yyyyMMddHHmmss");
           }
 
@@ -254,10 +253,9 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
                     QString msg = (type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
                     QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
                     if(m_username!=(*it).src || type == CHANNEL_CHAT)
-                        item->setTextAlignment(Qt::AlignLeft);
+                          item->setTextAlignment(Qt::AlignLeft);
                     else
                         item->setTextAlignment(Qt::AlignRight);
-                    item->setSizeHint(QSize(100 , 150));
 
                 }
 
@@ -365,7 +363,6 @@ void ChatPage::sendChatMessage(QString dst, QString body, QString date)
              msg = dst + " : " + body + "\n\n" + QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
 
             QListWidgetItem *item = new QListWidgetItem(msg, ui->chatsList);
-            item->setSizeHint(QSize(100 , 150));
             if(m_tabIndex == 0 || m_tabIndex == 2){
                 item->setTextAlignment(Qt::AlignRight);
             } else {

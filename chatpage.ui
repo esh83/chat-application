@@ -224,8 +224,17 @@ color : white;
      <height>461</height>
     </rect>
    </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="styleSheet">
     <string notr="true"/>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
    </property>
    <property name="autoScrollMargin">
     <number>16</number>
@@ -235,6 +244,9 @@ color : white;
    </property>
    <property name="alternatingRowColors">
     <bool>false</bool>
+   </property>
+   <property name="verticalScrollMode">
+    <enum>QAbstractItemView::ScrollPerPixel</enum>
    </property>
    <property name="isWrapping" stdset="0">
     <bool>false</bool>
