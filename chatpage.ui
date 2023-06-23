@@ -54,7 +54,7 @@ padding: 20px;
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>50</y>
+      <y>35</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -72,7 +72,7 @@ color : white;
     </property>
     <property name="icon">
      <iconset resource="source.qrc">
-      <normaloff>:/src/img/plus.png</normaloff>:/src/img/plus.png</iconset>
+      <normaloff>:/src/img/chanel+.png</normaloff>:/src/img/chanel+.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -85,7 +85,7 @@ color : white;
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>158</y>
+      <y>207</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -150,7 +150,7 @@ color : white;
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>270</y>
+      <y>300</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -181,7 +181,7 @@ color : white;
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>387</y>
+      <y>394</y>
       <width>48</width>
       <height>50</height>
      </rect>
@@ -206,6 +206,37 @@ color : white;
     <property name="icon">
      <iconset resource="source.qrc">
       <normaloff>:/src/img/chanel.png</normaloff>:/src/img/chanel.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_6">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>122</y>
+      <width>50</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:transparent;
+border : none;
+outline: none;
+padding:10px;
+color : white;
+</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="source.qrc">
+      <normaloff>:/src/img/grup+.png</normaloff>:/src/img/grup+.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -492,12 +523,12 @@ color : white;
    </property>
    <property name="icon">
     <iconset resource="source.qrc">
-     <normaloff>:/src/img/scrol down.png</normaloff>:/src/img/scrol down.png</iconset>
+     <normaloff>:/src/img/44567.png</normaloff>:/src/img/44567.png</iconset>
    </property>
    <property name="iconSize">
     <size>
-     <width>25</width>
-     <height>25</height>
+     <width>30</width>
+     <height>30</height>
     </size>
    </property>
   </widget>
