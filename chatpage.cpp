@@ -54,12 +54,12 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     ui->chatsList->setStyleSheet(
         "QListWidget#chatsList{"
         "background-image: url(:/src/img/pattern-2.jpg);"
-        " background-repeat: no-repeat;"
+        "background-repeat: no-repeat;"
         "background-attachment: fixed;"
         "border:1px solid #324D6A;"
         "outline:none;"
-
-        "padding:20px 0px"
+        "padding-top:30px;"
+        "padding-bottom:15px;"
         "}"
         "QListWidget#chatsList::item {"
         "padding:20px;"
@@ -205,7 +205,6 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
             item->setTextAlignment(Qt::AlignLeft);
         else
             item->setTextAlignment(Qt::AlignRight);
-        item->setSizeHint(QSize(100 , 150));
         last_date =  QDateTime::fromString((*it).date , "yyyyMMddHHmmss").addSecs(2).toString("yyyyMMddHHmmss");
           }
 
@@ -254,10 +253,9 @@ void ChatPage::getChat(QString item , QString endpoint , int type){
                     QString msg = (type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
                     QListWidgetItem *item = new QListWidgetItem(msg , ui->chatsList);
                     if(m_username!=(*it).src || type == CHANNEL_CHAT)
-                        item->setTextAlignment(Qt::AlignLeft);
+                          item->setTextAlignment(Qt::AlignLeft);
                     else
                         item->setTextAlignment(Qt::AlignRight);
-                    item->setSizeHint(QSize(100 , 150));
 
                 }
 
@@ -365,7 +363,6 @@ void ChatPage::sendChatMessage(QString dst, QString body, QString date)
              msg = dst + " : " + body + "\n\n" + QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd HH:mm:ss");
 
             QListWidgetItem *item = new QListWidgetItem(msg, ui->chatsList);
-            item->setSizeHint(QSize(100 , 150));
             if(m_tabIndex == 0 || m_tabIndex == 2){
                 item->setTextAlignment(Qt::AlignRight);
             } else {
@@ -395,6 +392,28 @@ void ChatPage::on_btn_sendMessage_clicked()
     sendChatMessage(dst, body, date);
 }
 
+//FUNCTIONS TO CREATE CHATS
+
+void ChatPage::on_btn_new_chat_clicked()
+{
+    AddChat newChat(m_token,PERSONAL_CHAT,"/sendmessageuser");
+    newChat.exec();
+}
+
+void ChatPage::on_btn_new_channel_clicked()
+{
+    AddChat newChannel(m_token,CHANNEL_CHAT,"/createchannel");
+    newChannel.exec();
+}
+
+void ChatPage::on_btn_new_group_clicked()
+{
+    AddChat newGroup(m_token,GROUP_CHAT,"/creategroup");
+    newGroup.exec();
+}
+
+
+//ANOTHER FUNCTIONS
 
 void ChatPage::on_tabWidget_currentChanged(int index)
 {
@@ -405,6 +424,13 @@ void ChatPage::on_tabWidget_currentChanged(int index)
            ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
     else if (index==2 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
+
+    if(currentTab==0)
+           getUsersList();
+    else if(currentTab==1)
+           getChannelList();
+    else
+           getGroupList();
 }
 
 void ChatPage::on_btn_scrollBottom_clicked()
@@ -440,13 +466,5 @@ void ChatPage::on_btn_logout_clicked()
 
     });
     req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
-}
-
-
-
-void ChatPage::on_btn_new_channel_clicked()
-{
-    AddChat newChannel(m_token);
-    newChannel.exec();
 }
 

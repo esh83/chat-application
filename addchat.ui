@@ -88,12 +88,12 @@ padding : 15px 0;</string>
 border-radius:10px;
 }</string>
    </property>
-   <widget class="QLabel" name="label_8">
+   <widget class="QLabel" name="dialog_title">
     <property name="geometry">
      <rect>
       <x>50</x>
       <y>30</y>
-      <width>91</width>
+      <width>161</width>
       <height>31</height>
      </rect>
     </property>
@@ -107,7 +107,7 @@ background-color:white;</string>
      <string>creating</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_9">
+   <widget class="QLabel" name="lbl_info">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -126,7 +126,7 @@ background-color:white;</string>
      <string>Please fill infomation</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_10">
+   <widget class="QLabel" name="lbl_name">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -142,7 +142,7 @@ font-size:16px;
 background-color:white;</string>
     </property>
     <property name="text">
-     <string>name</string>
+     <string>....</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="input_chat_name">
@@ -169,6 +169,70 @@ background-color: white;
 {
 border-bottom:1px solid #40ABE3;
 }</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_title">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>260</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:gray;
+font-weight:400;
+font-size:16px;
+background-color:white;</string>
+    </property>
+    <property name="text">
+     <string>....</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="input_chat_title">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>300</y>
+      <width>451</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">#input_chat_title
+{
+outline:none;
+border:none;
+border-bottom:1px solid lightgray;
+background-color: white;
+}
+#input_chat_name_2:focus
+{
+border-bottom:1px solid #40ABE3;
+}</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_dst">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>260</y>
+      <width>291</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:gray;
+font-weight:400;
+font-size:16px;
+background-color:white;</string>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
