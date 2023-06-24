@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="source.qrc">
+    <normaloff>:/src/img/65456.png</normaloff>:/src/img/65456.png</iconset>
+  </property>
   <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
@@ -241,6 +245,8 @@ background-color:white;</string>
   <zorder>btn_create</zorder>
   <zorder>btn_cancel</zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="source.qrc"/>
+ </resources>
  <connections/>
 </ui>
