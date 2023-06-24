@@ -50,7 +50,7 @@ padding: 20px;
 }
 </string>
    </property>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="btn_join_channel">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -58,6 +58,12 @@ padding: 20px;
       <width>50</width>
       <height>50</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="toolTip">
+     <string>join channel</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
@@ -89,6 +95,12 @@ color : white;
       <width>50</width>
       <height>50</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="toolTip">
+     <string>new chat</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
@@ -124,6 +136,9 @@ color : white;
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="toolTip">
+     <string>logout</string>
+    </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
 border : none;
@@ -154,6 +169,12 @@ color : white;
       <width>50</width>
       <height>50</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="toolTip">
+     <string>create group</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
@@ -190,7 +211,7 @@ color : white;
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="toolTip">
-     <string>join channel</string>
+     <string>create channel</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
@@ -214,7 +235,7 @@ color : white;
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_6">
+   <widget class="QPushButton" name="btn_join_group">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -222,6 +243,12 @@ color : white;
       <width>50</width>
       <height>50</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="toolTip">
+     <string>join group</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:transparent;
@@ -381,7 +408,7 @@ border-radius:5px;
 padding:10px;</string>
     </property>
     <property name="placeholderText">
-     <string>Type yout message . . .</string>
+     <string>Type your message . . .</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_sendMessage">
@@ -513,10 +540,10 @@ background-color:white;</string>
   <widget class="QPushButton" name="btn_scrollBottom">
    <property name="geometry">
     <rect>
-     <x>914</x>
-     <y>472</y>
-     <width>50</width>
-     <height>50</height>
+     <x>910</x>
+     <y>470</y>
+     <width>41</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="cursor">
@@ -528,6 +555,7 @@ border : none;
 outline: none;
 padding:10px;
 color : white;
+opacity:0.5;
 </string>
    </property>
    <property name="text">
@@ -539,8 +567,8 @@ color : white;
    </property>
    <property name="iconSize">
     <size>
-     <width>30</width>
-     <height>30</height>
+     <width>35</width>
+     <height>35</height>
     </size>
    </property>
   </widget>
@@ -560,7 +588,7 @@ font-weight:bold;
 padding:5px;</string>
    </property>
    <property name="text">
-    <string>Your Connection Status : . . .</string>
+    <string>Your Connection Status : </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
