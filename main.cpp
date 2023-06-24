@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QString>
+#include <QMutex>
 
 int main(int argc, char *argv[])
 {
@@ -12,14 +13,14 @@ int main(int argc, char *argv[])
     QString dbPath = path + "/data.db";
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbPath);
-
     if (!db.open()) {
         qDebug() << db.lastError().text();
         return 1;
     } else {
         qDebug() << "Database opened successfully";
     }
-    SetupMain w;
+    QMutex db_mutex;
+    SetupMain w(&db,&db_mutex);
     w.show();
     return a.exec();
 }

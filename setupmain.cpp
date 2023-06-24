@@ -13,9 +13,9 @@
 #include "requesthandler.h"
 
 
-SetupMain::SetupMain(QWidget *parent) :
+SetupMain::SetupMain(QSqlDatabase *db, QMutex *mx ,QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::SetupMain)
+    ui(new Ui::SetupMain) , m_db{db} , m_db_mutex{mx}
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
@@ -30,7 +30,7 @@ SetupMain::SetupMain(QWidget *parent) :
         DB::TableInfo info;
         info = DB::selectTblinfo();
         if(info.token!=""){
-            ChatPage* chat = new ChatPage( info.password , info.username, info.token);
+            ChatPage* chat = new ChatPage(info.password , info.username, info.token);
             connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
             connect(chat , SIGNAL(accepted()) , this , SLOT(show()));
             chat->show();

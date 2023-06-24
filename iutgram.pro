@@ -14,7 +14,8 @@ SOURCES += \
     main.cpp \
     queries.cpp \
     requesthandler.cpp \
-    setupmain.cpp
+    setupmain.cpp \
+    workerlist.cpp
 
 HEADERS += \
     addchat.h \
@@ -23,7 +24,8 @@ HEADERS += \
     queries.h \
     requesthandler.h \
     setupmain.h \
-    updateThread.h
+    updateThread.h \
+    workerlist.h
 
 FORMS += \
     addchat.ui \

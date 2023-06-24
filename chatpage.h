@@ -11,12 +11,11 @@
 #include <QNetworkRequest>
 #include <QListWidgetItem>
 #include "config.h"
-#include "updateThread.h"
 #include "requesthandler.h"
+#include "workerlist.h"
 namespace Ui {
 class ChatPage;
 }
-
 class ChatPage : public QDialog
 {
     Q_OBJECT
@@ -38,6 +37,10 @@ private slots:
     void on_messagesList_channel_itemClicked(QListWidgetItem *item);
     void getChannelChat(QString item);
 
+
+    void handleUserListResult(QVector<QString> result);
+     void handleChannelListResult(QVector<QString> result);
+     void handleGroupListResult(QVector<QString> result);
     void getUsersList();
 
     void getGroupList();
@@ -71,11 +74,12 @@ private:
     QString m_token;
     QString m_username;
     QString m_password;
-    UpdateThread* m_updateThread;
     int m_tabIndex;
     int currentTab{0};
     int m_selectedChatIndex{-1};
     QString m_currentChatName;
+    WorkerList *m_workerlist;
+    QThread *m_workerThread;
 
 
 };

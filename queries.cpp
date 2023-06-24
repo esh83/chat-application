@@ -25,12 +25,12 @@ DB::TableInfo DB::selectTblinfo()
             TableInfo tblinfo;
 
             tblinfo.token = qry.value(qry.record().indexOf("token")).toString();
-           tblinfo.username = qry.value(qry.record().indexOf("username")).toString();
+            tblinfo.username = qry.value(qry.record().indexOf("username")).toString();
             tblinfo.password = qry.value(qry.record().indexOf("password")).toString();
-           tblinfo.title = qry.value(qry.record().indexOf("title")).toString();
-           return tblinfo;
+            tblinfo.title = qry.value(qry.record().indexOf("title")).toString();
+            return tblinfo;
         }else{
-           throw qry.lastError().text();
+            throw qry.lastError().text();
         }
 
     }
@@ -38,11 +38,11 @@ DB::TableInfo DB::selectTblinfo()
 
 void DB::insertTblInfo(QString token , QString username, QString password,QString title)
 {
-     QSqlQuery qry;
+    QSqlQuery qry;
     qry.prepare("DELETE FROM tblinfo");
-     if( !qry.exec() ){
+    if( !qry.exec() ){
         throw qry.lastError().text();
-     }
+    }
     qry.prepare( "INSERT INTO tblinfo (token,username,password,title) VALUES (:tkn,:uname,:pass,:tit)" );
     qry.bindValue(":tkn" , token);
     qry.bindValue(":uname" , username);
@@ -105,7 +105,7 @@ QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
     QSqlQuery qry;
     QVector<DB::TableChatsList> list;
     qry.prepare( "SELECT username,title,type FROM tblchatslist WHERE type=:typ" );
-     qry.bindValue(":typ" , type);
+    qry.bindValue(":typ" , type);
     if( !qry.exec() ){
         throw qry.lastError().text();
     }
@@ -113,12 +113,12 @@ QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
     {
 
         while(qry.next()){
-           TableChatsList tbl;
+            TableChatsList tbl;
 
-           tbl.title = qry.value(qry.record().indexOf("title")).toString();
+            tbl.title = qry.value(qry.record().indexOf("title")).toString();
             tbl.username = qry.value(qry.record().indexOf("username")).toString();
-             tbl.type = qry.value(qry.record().indexOf("type")).toInt();
-           list.append(tbl);
+            tbl.type = qry.value(qry.record().indexOf("type")).toInt();
+            list.append(tbl);
         }
 
     }
@@ -170,7 +170,7 @@ void DB::insertTblChats(QString src, QString dst, QString body,QString date)
     qry.bindValue(":src" , src);
     qry.bindValue(":dst" , dst);
     qry.bindValue(":body" , body);
-      qry.bindValue(":date" , date);
+    qry.bindValue(":date" , date);
 
 
     if( !qry.exec() ){
@@ -189,11 +189,11 @@ QVector<DB::TableChats> DB::selectTblChats(QString src, QString dst)
         qry.prepare( "SELECT src,dst,body,date FROM tblchats WHERE dst=:dst" );
         qry.bindValue(":dst" , dst);
     }
-     else{
-           qry.prepare( "SELECT src,dst,body,date FROM tblchats WHERE (src=:src AND dst=:dst) OR (src=:dst AND dst=:src)" );
-           qry.bindValue(":src" , src);
-           qry.bindValue(":dst" , dst);
-         }
+    else{
+        qry.prepare( "SELECT src,dst,body,date FROM tblchats WHERE (src=:src AND dst=:dst) OR (src=:dst AND dst=:src)" );
+        qry.bindValue(":src" , src);
+        qry.bindValue(":dst" , dst);
+    }
 
     if( !qry.exec() ){
         throw qry.lastError().text();
@@ -202,13 +202,13 @@ QVector<DB::TableChats> DB::selectTblChats(QString src, QString dst)
     {
 
         while(qry.next()){
-           TableChats tbl;
+            TableChats tbl;
 
-           tbl.src = qry.value(qry.record().indexOf("src")).toString();
-           tbl.dst = qry.value(qry.record().indexOf("dst")).toString();
-           tbl.body = qry.value(qry.record().indexOf("body")).toString();
-           tbl.date = qry.value(qry.record().indexOf("date")).toString();
-           list.append(tbl);
+            tbl.src = qry.value(qry.record().indexOf("src")).toString();
+            tbl.dst = qry.value(qry.record().indexOf("dst")).toString();
+            tbl.body = qry.value(qry.record().indexOf("body")).toString();
+            tbl.date = qry.value(qry.record().indexOf("date")).toString();
+            list.append(tbl);
         }
 
     }
