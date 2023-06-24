@@ -84,12 +84,12 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getChannelList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     m_workerThread->start();
-    timer->start(5000);
+    timer->start(1000);
 
     //GET INITIAL DATA
-    m_workerlist->getUserList();
-    m_workerlist->getChannelList();
-    m_workerlist->getGroupList();
+    QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
+    QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
+    QTimer::singleShot(0,m_workerlist ,&WorkerList::getGroupList);
     //ui->tabWidget->setCurrentIndex(0);
 
 
@@ -476,11 +476,11 @@ void ChatPage::on_tabWidget_currentChanged(int index)
            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
 
     if(currentTab==0)
-          m_workerlist->getUserList();
+         QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
     else if(currentTab==1)
-            m_workerlist->getChannelList();
+            QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
     else
-            m_workerlist->getGroupList();
+            QTimer::singleShot(0,m_workerlist ,&WorkerList::getGroupList);
 }
 
 void ChatPage::on_btn_scrollBottom_clicked()
