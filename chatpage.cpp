@@ -74,19 +74,34 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     // CONFIG THE THREAD TO RUN REPEATEDLY TO UPDATE CHAT DATA
     m_workerThread  = new QThread;
     m_workerlist = new WorkerList(m_token);
+    m_workerchat = new WorkerChat(m_token);
+    m_workerchat->m_endpoint = "getuserchats";
+    m_workerchat->m_type = PERSONAL_CHAT;
+     m_workerchat->m_username = m_username;
+    m_workerchat->m_des = "";
     m_workerlist->moveToThread(m_workerThread);
+    m_workerchat->moveToThread(m_workerThread);
     connect(m_workerThread, &QThread::finished, m_workerlist, &QObject::deleteLater);
+    connect(m_workerThread, &QThread::finished, m_workerchat, &QObject::deleteLater);
     connect(m_workerThread, &QThread::started, m_workerlist, &WorkerList::openDB);
+    //WORKER LIST SIGNALS AND SLOTS
     connect(m_workerlist, &WorkerList::listUserReady,this , &ChatPage::handleUserListResult);
     connect(m_workerlist, &WorkerList::listChannelReady,this , &ChatPage::handleChannelListResult);
     connect(m_workerlist, &WorkerList::listGroupReady,this , &ChatPage::handleGroupListResult);
     connect(m_workerlist, &WorkerList::failed,this , &ChatPage::handleFailedListResult);
+       connect(m_workerlist, &WorkerList::success,this , &ChatPage::handleSuccessListResult);
+     //WORKER CHAT SIGNALS AND SLOTS
+     connect(m_workerchat , &WorkerChat::chatsReady,this , &ChatPage::handleChatResult);
+      connect(m_workerchat , &WorkerChat::chatSended,this , &ChatPage::handleChatSended);
+      connect(m_workerchat , &WorkerChat::failedWrite,this , &ChatPage::handleSendingFailed);
+
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getUserList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getChannelList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
+    connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
     m_workerThread->start();
-    timer->start(5000);
+    timer->start(10000);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
@@ -206,6 +221,7 @@ void ChatPage::updateCurrentChatMessages()
 
 void ChatPage::getChat(QString item , QString endpoint , int type){
     ui->chatsList->clear();
+
     QString last_date = "";
     //READ MESSAGES FROM LOCAL DATABASE
     try{
@@ -301,6 +317,7 @@ void ChatPage::handleUserListResult(QVector<QString> result)
     /*if (m_selectedChatIndex!=-1 && currentTab == chatType-1 && currentTab == m_tabIndex)
            ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);*/
     qDebug() << "thread updated!";
+
     ui->messagesList_chat->clear();
     //ADD Result to list widget
     for (auto it = result.begin(); it != result.end(); it++){
@@ -352,6 +369,44 @@ void ChatPage::handleGroupListResult(QVector<QString> result)
 
 void ChatPage::handleFailedListResult()
 {
+    ui->lbl_con_status->setStyleSheet("background-color:rgba(255, 74, 74,0.6);color:white;font-weight:bold;padding:5px;");
+    ui->lbl_con_status->setText("your are offline");
+}
+
+void ChatPage::handleSuccessListResult()
+{
+    ui->lbl_con_status->setStyleSheet("background-color:rgba(15, 184, 0,0.6);color:white;font-weight:bold;padding:5px;");
+    ui->lbl_con_status->setText("your are online");
+}
+
+void ChatPage::handleChatResult(QVector<chatMsg> result)
+{
+    ui->chat_title->setText(m_currentChatName);
+    ui->chatsList->clear();
+    for(auto it = result.begin();  it !=result.end(); it++){
+      QListWidgetItem *item = new QListWidgetItem((*it).msg , ui->chatsList);
+      if((*it).isRight)
+        item->setTextAlignment(Qt::AlignRight);
+      else
+        item->setTextAlignment(Qt::AlignLeft);
+    }
+    //ui->chatsList->scrollToBottom();
+}
+
+void ChatPage::handleChatSended()
+{
+     ui->btn_sendMessage->setIcon(QIcon(":/src/img/send_icon.png"));
+    ui->btn_sendMessage->setDisabled(false);
+    ui->chat_title->setText("loading ...");
+    QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
+    ui->input_message->clear();
+}
+
+void ChatPage::handleSendingFailed()
+{
+    ui->btn_sendMessage->setIcon(QIcon(":/src/img/send_icon.png"));
+    ui->btn_sendMessage->setDisabled(false);
+    QMessageBox::warning(this ,"Error" , "can not send your message");
 
 }
 
@@ -363,11 +418,14 @@ void ChatPage::getGroupChat(QString item)
 void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
 {
     m_selectedChatIndex = ui->messagesList_chat->currentRow();
-    getUserChat(item->text());
     m_tabIndex = currentTab;
     m_currentChatName = item->text();
     ui->messagesList_channel->setCurrentRow(-1);
     ui->messagesList_group->setCurrentRow(-1);
+    m_workerchat->m_des = item->text();
+    ui->chatsList->clear();
+    ui->chat_title->setText("loading ...");
+     QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
 
 }
 
@@ -376,9 +434,12 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
     m_selectedChatIndex = ui->messagesList_channel->currentRow();
     m_tabIndex = currentTab;
     m_currentChatName = item->text();
-    getChannelChat(item->text());
     ui->messagesList_chat->setCurrentRow(-1);
     ui->messagesList_group->setCurrentRow(-1);
+    m_workerchat->m_des = item->text();
+    ui->chatsList->clear();
+    ui->chat_title->setText("loading ...");
+    QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
 
 }
 
@@ -387,10 +448,12 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
     m_selectedChatIndex = ui->messagesList_group->currentRow();
     m_tabIndex = currentTab;
     m_currentChatName = item->text();
-    m_currentChatName = item->text();
-    getGroupChat(item->text());
     ui->messagesList_channel->setCurrentRow(-1);
     ui->messagesList_chat->setCurrentRow(-1);
+    m_workerchat->m_des = item->text();
+    ui->chatsList->clear();
+    ui->chat_title->setText("loading ...");
+    QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
 
 }
 
@@ -457,10 +520,11 @@ void ChatPage::sendChatMessage(QString dst, QString body, QString date)
 void ChatPage::on_btn_sendMessage_clicked()
 {
     if(ui->input_message->text() == "" || m_currentChatName== "") return;
-    QString dst =m_currentChatName;
     QString body = ui->input_message->text();
-    QString date = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
-    sendChatMessage(dst, body, date);
+    m_workerchat->m_body = body;
+    ui->btn_sendMessage->setDisabled(true);
+    ui->btn_sendMessage->setIcon(QIcon(":/src/img/settings.png"));
+     QTimer::singleShot(0,m_workerchat ,&WorkerChat::sendChat);
 }
 
 //FUNCTIONS TO CREATE CHATS
@@ -496,12 +560,24 @@ void ChatPage::on_tabWidget_currentChanged(int index)
     else if (index==2 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
 
-    if(currentTab==0)
-         QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
-    else if(currentTab==1)
-            QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
-    else
-            QTimer::singleShot(0,m_workerlist ,&WorkerList::getGroupList);
+    if(currentTab==0){
+           m_workerchat->m_type = PERSONAL_CHAT;
+           m_workerchat->m_endpoint = "getuserchats";
+           QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
+    }
+
+    else if(currentTab==1){
+           m_workerchat->m_type = CHANNEL_CHAT;
+           m_workerchat->m_endpoint = "getchannelchats";
+             QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
+    }
+
+    else{
+             m_workerchat->m_type = GROUP_CHAT;
+             m_workerchat->m_endpoint = "getgroupchats";
+               QTimer::singleShot(0,m_workerlist ,&WorkerList::getGroupList);
+    }
+
 }
 
 void ChatPage::on_btn_scrollBottom_clicked()

@@ -46,7 +46,7 @@ void WorkerList::getList(int chatType , QString endpoint)
                         }
                 }
             }
-
+            emit success();
         }
         else {
             qDebug() << "error fetching list data from api :" << code;
@@ -79,9 +79,6 @@ void WorkerList::getList(int chatType , QString endpoint)
         }
     });
     req_handler->fetchData(QString(API_ADRESS) + endpoint + "?token=" + m_token);
-    //READ LIST FROM LOCAL DATABASE
-
-
 
 }
 
@@ -92,6 +89,19 @@ void WorkerList::getUserList()
 void WorkerList::getChannelList()
 {
      getList(CHANNEL_CHAT, "/getchannellist");
+}
+
+void WorkerList::openDB()
+{
+     QString path = QCoreApplication::applicationDirPath();
+     QString dbPath = path + "/data.db";
+     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",  "worker_db");
+     db.setDatabaseName(dbPath);
+     if (!db.open()) {
+         qDebug() << db.lastError().text();
+     } else {
+         qDebug() << "Database opened successfully";
+     }
 }
 void WorkerList::getGroupList()
 {

@@ -13,6 +13,7 @@
 #include "config.h"
 #include "requesthandler.h"
 #include "workerlist.h"
+#include "workerchat.h"
 namespace Ui {
 class ChatPage;
 }
@@ -42,6 +43,10 @@ private slots:
      void handleChannelListResult(QVector<QString> result);
      void handleGroupListResult(QVector<QString> result);
      void handleFailedListResult();
+    void handleSuccessListResult();
+     void handleChatResult(QVector<chatMsg> result);
+     void handleChatSended();
+     void handleSendingFailed();
     void getUsersList();
 
     void getGroupList();
@@ -80,6 +85,7 @@ private:
     int m_selectedChatIndex{-1};
     QString m_currentChatName;
     WorkerList *m_workerlist;
+    WorkerChat *m_workerchat;
     QThread *m_workerThread;
 
 

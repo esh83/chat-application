@@ -19,23 +19,14 @@ public slots:
     void getUserList();
     void getGroupList();
     void getChannelList();
-    void openDB(){
-        QString path = QCoreApplication::applicationDirPath();
-        QString dbPath = path + "/data.db";
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",  "worker_db");
-        db.setDatabaseName(dbPath);
-        if (!db.open()) {
-            qDebug() << db.lastError().text();
-        } else {
-            qDebug() << "Database opened successfully";
-        }
-    }
+    void openDB();
 
 signals:
     void listUserReady(QVector<QString> result);
     void listGroupReady(QVector<QString> result);
     void listChannelReady(QVector<QString> result);
     void failed();
+    void success();
 
 };
 

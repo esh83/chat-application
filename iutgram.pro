@@ -15,6 +15,7 @@ SOURCES += \
     queries.cpp \
     requesthandler.cpp \
     setupmain.cpp \
+    workerchat.cpp \
     workerlist.cpp
 
 HEADERS += \
@@ -25,6 +26,7 @@ HEADERS += \
     requesthandler.h \
     setupmain.h \
     updateThread.h \
+    workerchat.h \
     workerlist.h
 
 FORMS += \

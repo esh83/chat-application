@@ -165,7 +165,7 @@ void DB::emptyTblChats()
 }
 void DB::insertTblChats(QString src, QString dst, QString body,QString date)
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     qry.prepare( "INSERT INTO tblchats (src,dst,body,date) VALUES (:src,:dst,:body,:date)" );
     qry.bindValue(":src" , src);
     qry.bindValue(":dst" , dst);
@@ -183,7 +183,7 @@ void DB::insertTblChats(QString src, QString dst, QString body,QString date)
 
 QVector<DB::TableChats> DB::selectTblChats(QString src, QString dst)
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     QVector<DB::TableChats> list;
     if(src == "*"){
         qry.prepare( "SELECT src,dst,body,date FROM tblchats WHERE dst=:dst" );
