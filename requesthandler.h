@@ -25,6 +25,7 @@ public slots:
 signals:
     void dataReady(QJsonObject);
     void errorOccured(QString err);
+    void done();
 };
 
 #endif // REQUESTHANDLER_H

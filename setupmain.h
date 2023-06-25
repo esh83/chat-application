@@ -4,8 +4,6 @@
 #include <QWidget>
 #include <QDialog>
 
-class QSqlDatabase;
-class QMutex;
 namespace Ui {
 class SetupMain;
 }
@@ -15,7 +13,7 @@ class SetupMain : public QDialog
     Q_OBJECT
 
 public:
-    explicit SetupMain(QSqlDatabase *db, QMutex *mx ,QWidget *parent = nullptr);
+    explicit SetupMain(QWidget *parent = nullptr);
     ~SetupMain();
 
 
@@ -37,8 +35,6 @@ private slots:
 
 private:
     Ui::SetupMain *ui;
-    QSqlDatabase *m_db;
-    QMutex *m_db_mutex;
 };
 
 #endif // SETUPMAIN_H

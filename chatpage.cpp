@@ -76,15 +76,17 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     m_workerlist = new WorkerList(m_token);
     m_workerlist->moveToThread(m_workerThread);
     connect(m_workerThread, &QThread::finished, m_workerlist, &QObject::deleteLater);
+    connect(m_workerThread, &QThread::started, m_workerlist, &WorkerList::openDB);
     connect(m_workerlist, &WorkerList::listUserReady,this , &ChatPage::handleUserListResult);
-     connect(m_workerlist, &WorkerList::listChannelReady,this , &ChatPage::handleChannelListResult);
-     connect(m_workerlist, &WorkerList::listGroupReady,this , &ChatPage::handleGroupListResult);
+    connect(m_workerlist, &WorkerList::listChannelReady,this , &ChatPage::handleChannelListResult);
+    connect(m_workerlist, &WorkerList::listGroupReady,this , &ChatPage::handleGroupListResult);
+    connect(m_workerlist, &WorkerList::failed,this , &ChatPage::handleFailedListResult);
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getUserList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getChannelList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     m_workerThread->start();
-    timer->start(1000);
+    timer->start(5000);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
@@ -301,36 +303,55 @@ void ChatPage::handleUserListResult(QVector<QString> result)
     qDebug() << "thread updated!";
     ui->messagesList_chat->clear();
     //ADD Result to list widget
-    for (auto it = result.begin(); it != result.end(); it++)
-           ui->messagesList_chat->addItem((*it));
+    for (auto it = result.begin(); it != result.end(); it++){
+
+       ui->messagesList_chat->addItem((*it));
+
+    }
+
 
     ui->tabWidget->setCurrentIndex(currentTab);
 
 }
 void ChatPage::handleChannelListResult(QVector<QString> result)
 {
+
+
     /*if (m_selectedChatIndex!=-1 && currentTab == chatType-1 && currentTab == m_tabIndex)
            ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);*/
 
     ui->messagesList_channel->clear();
     //ADD Result to list widget
-    for (auto it = result.begin(); it != result.end(); it++)
-           ui->messagesList_channel->addItem((*it));
+    for (auto it = result.begin(); it != result.end(); it++){
+      ui->messagesList_channel->addItem((*it));
+
+    }
+
 
     ui->tabWidget->setCurrentIndex(currentTab);
 
 }
 void ChatPage::handleGroupListResult(QVector<QString> result)
 {
+
+
     /*if (m_selectedChatIndex!=-1 && currentTab == chatType-1 && currentTab == m_tabIndex)
            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);*/
 
     ui->messagesList_group->clear();
     //ADD Result to list widget
-    for (auto it = result.begin(); it != result.end(); it++)
-           ui->messagesList_group->addItem((*it));
+    for (auto it = result.begin(); it != result.end(); it++){
+      ui->messagesList_group->addItem((*it));
+
+    }
+
 
     ui->tabWidget->setCurrentIndex(currentTab);
+
+}
+
+void ChatPage::handleFailedListResult()
+{
 
 }
 

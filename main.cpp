@@ -19,8 +19,7 @@ int main(int argc, char *argv[])
     } else {
         qDebug() << "Database opened successfully";
     }
-    QMutex db_mutex;
-    SetupMain w(&db,&db_mutex);
+    SetupMain w;
     w.show();
     return a.exec();
 }

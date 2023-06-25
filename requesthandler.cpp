@@ -33,5 +33,6 @@ void RequestHandler::handleData(QNetworkReply *reply)
         QJsonObject jsonObj = jsonDoc.object();
         emit dataReady(jsonObj);
     }
+    emit done();
   reply->deleteLater();
 }

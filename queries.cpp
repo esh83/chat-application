@@ -85,7 +85,7 @@ void DB::createTblChatsList()
 
 void DB::insertTblChatsList(QString username, QString title, int type)
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     qry.prepare( "INSERT INTO tblchatslist (username , title,type) VALUES (:uname,:tit,:typ)" );
     qry.bindValue(":uname" , username);
     qry.bindValue(":tit" , title);
@@ -102,7 +102,7 @@ void DB::insertTblChatsList(QString username, QString title, int type)
 
 QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     QVector<DB::TableChatsList> list;
     qry.prepare( "SELECT username,title,type FROM tblchatslist WHERE type=:typ" );
     qry.bindValue(":typ" , type);
@@ -137,7 +137,7 @@ void DB::emptyTblChatsList()
 
 void DB::deleteTblChatsList(int type)
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     qry.prepare("DELETE FROM tblchatslist WHERE type=:typ");
     qry.bindValue(":typ",type);
     if( !qry.exec() ){

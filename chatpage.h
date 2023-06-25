@@ -41,6 +41,7 @@ private slots:
     void handleUserListResult(QVector<QString> result);
      void handleChannelListResult(QVector<QString> result);
      void handleGroupListResult(QVector<QString> result);
+     void handleFailedListResult();
     void getUsersList();
 
     void getGroupList();

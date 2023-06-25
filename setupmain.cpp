@@ -13,9 +13,9 @@
 #include "requesthandler.h"
 
 
-SetupMain::SetupMain(QSqlDatabase *db, QMutex *mx ,QWidget *parent) :
+SetupMain::SetupMain(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::SetupMain) , m_db{db} , m_db_mutex{mx}
+    ui(new Ui::SetupMain)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
