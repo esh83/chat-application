@@ -119,7 +119,6 @@ ChatPage::~ChatPage()
 }
 void ChatPage::handleUserListResult(QVector<QString> result)
 {
-
     qDebug() << "thread updated!";
     ui->messagesList_chat->clear();
     //ADD Result to list widget
@@ -213,6 +212,8 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
     ui->messagesList_channel->setCurrentRow(-1);
     ui->messagesList_group->setCurrentRow(-1);
     m_workerchat->m_des = item->text();
+    m_workerchat->m_type = PERSONAL_CHAT;
+    m_workerchat->m_endpoint = "getuserchats";
     ui->chatsList->clear();
     ui->chat_title->setText("loading ...");
      QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
@@ -221,12 +222,14 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
 
 void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 {
-    m_selectedChatIndex = ui->messagesList_channel->currentRow();
+     m_selectedChatIndex = ui->messagesList_channel->currentRow();
     m_tabIndex = currentTab;
     m_currentChatName = item->text();
     ui->messagesList_chat->setCurrentRow(-1);
     ui->messagesList_group->setCurrentRow(-1);
     m_workerchat->m_des = item->text();
+    m_workerchat->m_type = CHANNEL_CHAT;
+    m_workerchat->m_endpoint = "getchannelchats";
     ui->chatsList->clear();
     ui->chat_title->setText("loading ...");
     QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
@@ -241,6 +244,8 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
     ui->messagesList_channel->setCurrentRow(-1);
     ui->messagesList_chat->setCurrentRow(-1);
     m_workerchat->m_des = item->text();
+    m_workerchat->m_type = GROUP_CHAT;
+    m_workerchat->m_endpoint = "getgroupchats";
     ui->chatsList->clear();
     ui->chat_title->setText("loading ...");
     QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
@@ -299,20 +304,14 @@ void ChatPage::on_tabWidget_currentChanged(int index)
            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
 
     if(currentTab==0){
-           m_workerchat->m_type = PERSONAL_CHAT;
-           m_workerchat->m_endpoint = "getuserchats";
            QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
     }
 
-    else if(currentTab==1){
-           m_workerchat->m_type = CHANNEL_CHAT;
-           m_workerchat->m_endpoint = "getchannelchats";
+    else if(currentTab==1){ 
              QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
     }
 
     else{
-             m_workerchat->m_type = GROUP_CHAT;
-             m_workerchat->m_endpoint = "getgroupchats";
                QTimer::singleShot(0,m_workerlist ,&WorkerList::getGroupList);
     }
 
