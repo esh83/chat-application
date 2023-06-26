@@ -166,6 +166,19 @@ void DB::emptyTblChats()
 void DB::insertTblChats(QString src, QString dst, QString body,QString date)
 {
     QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    qry.prepare( "SELECT * FROM tblchats WHERE src=:src AND dst=:dst AND body=:body AND date=:date" );
+    qry.bindValue(":src" , src);
+    qry.bindValue(":dst" , dst);
+    qry.bindValue(":body" , body);
+    qry.bindValue(":date" , date);
+    if( !qry.exec() ){
+        throw qry.lastError().text();
+    }
+    else{
+        if(qry.next()){
+            return;
+        }
+    }
     qry.prepare( "INSERT INTO tblchats (src,dst,body,date) VALUES (:src,:dst,:body,:date)" );
     qry.bindValue(":src" , src);
     qry.bindValue(":dst" , dst);

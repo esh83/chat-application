@@ -93,6 +93,7 @@ void WorkerList::getChannelList()
 
 void WorkerList::openDB()
 {
+     QSqlDatabase::removeDatabase("worker_db");
      QString path = QCoreApplication::applicationDirPath();
      QString dbPath = path + "/data.db";
      QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",  "worker_db");

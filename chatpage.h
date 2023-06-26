@@ -63,6 +63,7 @@ private:
     WorkerList *m_workerlist;
     WorkerChat *m_workerchat;
     QThread *m_workerThread;
+    bool m_shoud_scroll{false};
 
 
 };

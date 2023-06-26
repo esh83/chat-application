@@ -154,8 +154,6 @@ void ChatPage::handleGroupListResult(QVector<QString> result)
       ui->messagesList_group->addItem((*it));
     }
     ui->tabWidget->setCurrentIndex(currentTab);
-
-
 }
 
 void ChatPage::handleFailedListResult()
@@ -181,7 +179,9 @@ void ChatPage::handleChatResult(QVector<chatMsg> result)
       else
         item->setTextAlignment(Qt::AlignLeft);
     }
-    //ui->chatsList->scrollToBottom();
+    if(m_shoud_scroll)
+      ui->chatsList->scrollToBottom();
+    m_shoud_scroll = false;
 }
 
 void ChatPage::handleChatSended()
@@ -258,6 +258,7 @@ void ChatPage::on_btn_sendMessage_clicked()
     connect(m_workerchat , &WorkerChat::chatSended , movie , &QMovie::deleteLater);
     connect(m_workerchat , &WorkerChat::failedWrite , movie , &QMovie::deleteLater);
     movie->start();
+    m_shoud_scroll = true;
     QTimer::singleShot(0,m_workerchat ,&WorkerChat::sendChat);
 }
 

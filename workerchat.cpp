@@ -1,5 +1,4 @@
 #include "workerchat.h"
-#include <QSignalSpy>
 
 
 WorkerChat::WorkerChat(QString token, QObject *parent) : QObject{parent} , m_token{token}
@@ -81,9 +80,6 @@ void WorkerChat::getChats()
     });
     QString date_param = (last_date != "") ? ("&date=" + last_date) : "";
     req_handler->fetchData(QString(API_ADRESS)+ "/" + m_endpoint + "?token="+m_token+"&dst="+m_des+date_param);
-    //waint for the signal to emit
-    QSignalSpy spy(req_handler, SIGNAL(done()));
-    spy.wait();
 }
 
 void WorkerChat::sendChat()
@@ -114,6 +110,7 @@ void WorkerChat::sendChat()
             emit failedWrite();
             qDebug() << "404 error in sending message";
         } else {
+             emit failedWrite();
             qDebug() << "error sending message";
         }
     });
