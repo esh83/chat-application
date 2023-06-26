@@ -25,7 +25,6 @@ HEADERS += \
     queries.h \
     requesthandler.h \
     setupmain.h \
-    updateThread.h \
     workerchat.h \
     workerlist.h
 

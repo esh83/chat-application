@@ -26,51 +26,27 @@ public:
     ~ChatPage();
 
 private slots:
-    void getChat(QString item , QString endpoint , int type);
+
     void on_messagesList_chat_itemClicked(QListWidgetItem* item);
-    void getUserChat(QString item);
-
-
     void on_messagesList_group_itemClicked(QListWidgetItem *item);
-    void getGroupChat(QString item);
-
-
     void on_messagesList_channel_itemClicked(QListWidgetItem *item);
-    void getChannelChat(QString item);
-
 
     void handleUserListResult(QVector<QString> result);
-     void handleChannelListResult(QVector<QString> result);
-     void handleGroupListResult(QVector<QString> result);
-     void handleFailedListResult();
+    void handleChannelListResult(QVector<QString> result);
+    void handleGroupListResult(QVector<QString> result);
+    void handleFailedListResult();
     void handleSuccessListResult();
-     void handleChatResult(QVector<chatMsg> result);
-     void handleChatSended();
-     void handleSendingFailed();
-    void getUsersList();
-
-    void getGroupList();
-
-    void getChannelList();
-
-    void updateCurrentChatMessages();
+    void handleChatResult(QVector<chatMsg> result);
+    void handleChatSended();
+    void handleSendingFailed();
 
     void on_btn_logout_clicked();
-
     void on_tabWidget_currentChanged(int index);
     void on_btn_sendMessage_clicked();
-
     void on_btn_scrollBottom_clicked();
 
-    void sendChatMessage(QString dst, QString body, QString date);
-
-    void getList(int chatType, QListWidget* listWidget, const QString& endpoint);
-
     void on_btn_new_channel_clicked();
-
-
     void on_btn_new_group_clicked();
-
     void on_btn_new_chat_clicked();
 
 private:

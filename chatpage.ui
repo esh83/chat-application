@@ -28,6 +28,10 @@
   <property name="windowTitle">
    <string>iutgram</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="source.qrc">
+    <normaloff>:/src/img/65456.png</normaloff>:/src/img/65456.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color:#e0e0e0;
 </string>
