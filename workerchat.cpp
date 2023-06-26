@@ -1,5 +1,5 @@
 #include "workerchat.h"
-
+#include <QSignalSpy>
 
 
 WorkerChat::WorkerChat(QString token, QObject *parent) : QObject{parent} , m_token{token}
@@ -15,7 +15,7 @@ void WorkerChat::getChats()
     try{
         QVector<DB::TableChats> list = DB::selectTblChats(m_type != PERSONAL_CHAT ? "*": m_username , m_des);
         for(auto it = list.begin();it!=list.end();it++){
-            last_date =  QDateTime::fromString((*it).date , "yyyyMMddHHmmss").addSecs(2).toString("yyyyMMddHHmmss");
+            last_date =  QDateTime::fromString((*it).date , "yyyyMMddHHmmss").addSecs(1).toString("yyyyMMddHHmmss");
         }
 
     }  catch(QString &err){
@@ -81,7 +81,9 @@ void WorkerChat::getChats()
     });
     QString date_param = (last_date != "") ? ("&date=" + last_date) : "";
     req_handler->fetchData(QString(API_ADRESS)+ "/" + m_endpoint + "?token="+m_token+"&dst="+m_des+date_param);
-
+    //waint for the signal to emit
+    QSignalSpy spy(req_handler, SIGNAL(done()));
+    spy.wait();
 }
 
 void WorkerChat::sendChat()

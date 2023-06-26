@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include "addchat.h"
 #include <QThread>
+#include <QMovie>
 QString message_list_styles = "QListWidget#%1{"
                   "background-color:white;"
                   "border:none;"
@@ -101,7 +102,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
     m_workerThread->start();
-    timer->start(10000);
+    timer->start(15000);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
@@ -523,8 +524,15 @@ void ChatPage::on_btn_sendMessage_clicked()
     QString body = ui->input_message->text();
     m_workerchat->m_body = body;
     ui->btn_sendMessage->setDisabled(true);
-    ui->btn_sendMessage->setIcon(QIcon(":/src/img/settings.png"));
-     QTimer::singleShot(0,m_workerchat ,&WorkerChat::sendChat);
+    QMovie * movie = new QMovie(this);
+    movie->setFileName(":/src/img/loading_icon.gif");
+    connect(movie, &QMovie::frameChanged, [=]{
+        ui->btn_sendMessage->setIcon(movie->currentPixmap());
+    });
+    connect(m_workerchat , &WorkerChat::chatSended , movie , &QMovie::deleteLater);
+    connect(m_workerchat , &WorkerChat::failedWrite , movie , &QMovie::deleteLater);
+    movie->start();
+    QTimer::singleShot(0,m_workerchat ,&WorkerChat::sendChat);
 }
 
 //FUNCTIONS TO CREATE CHATS
@@ -588,11 +596,19 @@ void ChatPage::on_btn_scrollBottom_clicked()
 void ChatPage::on_btn_logout_clicked()
 {
     ui->btn_logout->setDisabled(true);
+    QMovie * movie = new QMovie(this);
+    movie->setFileName(":/src/img/loading_icon.gif");
+    connect(movie, &QMovie::frameChanged, [=]{
+        ui->btn_logout->setIcon(movie->currentPixmap());
+    });
+    movie->start();
     RequestHandler *req_handler = new RequestHandler(this);
     connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
         qDebug()<<err;
         QMessageBox::warning(this ,"error" ,"something went wrong");
         ui->btn_logout->setDisabled(false);
+        delete movie;
+        ui->btn_logout->setIcon(QIcon(":/src/img/out.png"));
     });
     connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
         QString message = jsonObj.value("message").toString();
@@ -610,6 +626,8 @@ void ChatPage::on_btn_logout_clicked()
             QMessageBox::warning(this ,"error" ,message);
         }
         ui->btn_logout->setDisabled(false);
+        delete movie;
+        ui->btn_logout->setIcon(QIcon(":/src/img/out.png"));
 
     });
     req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
