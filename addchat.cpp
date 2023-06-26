@@ -45,10 +45,22 @@ AddChat::AddChat(QString token,int chatType, QString endpoint ,QWidget *parent) 
     }
     else
     {
-        ui->dialog_title->setText("Create group");
-        ui->lbl_name->setText("Group name");
-        ui->lbl_title->setText("Group title");
-        ui->lbl_dst->hide();
+        if(m_endpoint=="/creategroup")
+        {
+            ui->dialog_title->setText("Create group");
+            ui->lbl_name->setText("Group name");
+            ui->lbl_title->setText("Group title");
+            ui->lbl_dst->hide();
+        }
+        else
+        {
+            ui->dialog_title->setText("Join Group");
+            ui->lbl_name->setText("Group name");
+            ui->input_chat_title->hide();
+            ui->lbl_title->hide();
+            ui->lbl_dst->hide();
+        }
+
 
     }
 }
@@ -141,6 +153,10 @@ void AddChat::on_btn_create_clicked()
     {
         if(m_endpoint=="/joinchannel")
             req_hadler->fetchData(QString(API_ADRESS)+m_endpoint+"?token="+ m_token +"&channel_name="+ name_chat);
+        else
+            req_hadler->fetchData(QString(API_ADRESS)+m_endpoint+"?token="+ m_token +"&group_name="+ name_chat);
+
+
     }
 }
 

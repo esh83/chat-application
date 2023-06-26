@@ -102,7 +102,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
     m_workerThread->start();
-    timer->start(1500);
+    timer->start(15000);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
@@ -367,6 +367,13 @@ void ChatPage::on_btn_logout_clicked()
 void ChatPage::on_btn_join_channel_clicked()
 {
     AddChat newChannel(m_token,CHANNEL_CHAT,"/joinchannel");
+    newChannel.exec();
+}
+
+
+void ChatPage::on_btn_join_group_clicked()
+{
+    AddChat newChannel(m_token,GROUP_CHAT,"/joingroup");
     newChannel.exec();
 }
 

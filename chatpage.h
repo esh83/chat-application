@@ -51,6 +51,8 @@ private slots:
 
     void on_btn_join_channel_clicked();
 
+    void on_btn_join_group_clicked();
+
 private:
 
 private:
