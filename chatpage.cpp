@@ -119,40 +119,43 @@ ChatPage::~ChatPage()
 }
 void ChatPage::handleUserListResult(QVector<QString> result)
 {
-    if(m_selectedChatIndex!=-1 && currentTab == 0 && currentTab == m_tabIndex)
-           ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
+
     qDebug() << "thread updated!";
     ui->messagesList_chat->clear();
     //ADD Result to list widget
     for (auto it = result.begin(); it != result.end(); it++){
        ui->messagesList_chat->addItem((*it));
     }
+    if(m_selectedChatIndex!=-1 && currentTab == 0 && currentTab == m_tabIndex)
+       ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
     ui->tabWidget->setCurrentIndex(currentTab);
 
 }
 void ChatPage::handleChannelListResult(QVector<QString> result)
 {
 
-    if(m_selectedChatIndex!=-1 && currentTab == 1 && currentTab == m_tabIndex)
-           ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
+
     ui->messagesList_channel->clear();
     //ADD Result to list widget
     for (auto it = result.begin(); it != result.end(); it++){
       ui->messagesList_channel->addItem((*it));
 
     }
+    if(m_selectedChatIndex!=-1 && currentTab == 0 && currentTab == m_tabIndex)
+      ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
     ui->tabWidget->setCurrentIndex(currentTab);
 
 }
 void ChatPage::handleGroupListResult(QVector<QString> result)
 {
-    if(m_selectedChatIndex!=-1 && currentTab == 2 && currentTab == m_tabIndex)
-      ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
+
     ui->messagesList_group->clear();
     //ADD Result to list widget
     for (auto it = result.begin(); it != result.end(); it++){
       ui->messagesList_group->addItem((*it));
     }
+    if(m_selectedChatIndex!=-1 && currentTab == 2 && currentTab == m_tabIndex)
+      ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
     ui->tabWidget->setCurrentIndex(currentTab);
 }
 
