@@ -346,7 +346,7 @@ font-weight:bold;
 color:white;</string>
     </property>
     <property name="text">
-     <string>blank</string>
+     <string>select a chat</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_4">

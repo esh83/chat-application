@@ -68,6 +68,7 @@ private:
     WorkerChat *m_workerchat;
     QThread *m_workerThread;
     bool m_shoud_scroll{false};
+    int m_chats_count =0;
 
 
 };

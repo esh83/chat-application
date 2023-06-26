@@ -161,17 +161,21 @@ void ChatPage::handleGroupListResult(QVector<QString> result)
 void ChatPage::handleFailedListResult()
 {
     ui->lbl_con_status->setStyleSheet("background-color:rgba(255, 74, 74,0.6);color:white;font-weight:bold;padding:5px;");
-    ui->lbl_con_status->setText("your are offline");
+    ui->lbl_con_status->setText("you are offline");
 }
 
 void ChatPage::handleSuccessListResult()
 {
     ui->lbl_con_status->setStyleSheet("background-color:rgba(15, 184, 0,0.6);color:white;font-weight:bold;padding:5px;");
-    ui->lbl_con_status->setText("your are online");
+    ui->lbl_con_status->setText("you are online");
 }
 
 void ChatPage::handleChatResult(QVector<chatMsg> result)
 {
+    if(result.length() > m_chats_count){
+      m_shoud_scroll = true;
+    }
+    m_chats_count = result.length();
     ui->chat_title->setText(m_currentChatName);
     ui->chatsList->clear();
     for(auto it = result.begin();  it !=result.end(); it++){
@@ -206,6 +210,7 @@ void ChatPage::handleSendingFailed()
 
 void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
 {
+    m_chats_count = 0;
     m_selectedChatIndex = ui->messagesList_chat->currentRow();
     m_tabIndex = currentTab;
     m_currentChatName = item->text();
@@ -222,6 +227,7 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
 
 void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 {
+      m_chats_count = 0;
      m_selectedChatIndex = ui->messagesList_channel->currentRow();
     m_tabIndex = currentTab;
     m_currentChatName = item->text();
@@ -238,6 +244,7 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
 
 void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
 {
+     m_chats_count = 0;
     m_selectedChatIndex = ui->messagesList_group->currentRow();
     m_tabIndex = currentTab;
     m_currentChatName = item->text();
