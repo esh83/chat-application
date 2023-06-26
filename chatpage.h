@@ -49,6 +49,8 @@ private slots:
     void on_btn_new_group_clicked();
     void on_btn_new_chat_clicked();
 
+    void on_btn_join_channel_clicked();
+
 private:
 
 private:

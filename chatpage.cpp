@@ -102,7 +102,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
     m_workerThread->start();
-    timer->start(15000);
+    timer->start(1500);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
@@ -141,8 +141,8 @@ void ChatPage::handleChannelListResult(QVector<QString> result)
       ui->messagesList_channel->addItem((*it));
 
     }
-    if(m_selectedChatIndex!=-1 && currentTab == 0 && currentTab == m_tabIndex)
-      ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
+    if(m_selectedChatIndex!=-1 && currentTab == 1 && currentTab == m_tabIndex)
+      ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
     ui->tabWidget->setCurrentIndex(currentTab);
 
 }
@@ -155,7 +155,7 @@ void ChatPage::handleGroupListResult(QVector<QString> result)
       ui->messagesList_group->addItem((*it));
     }
     if(m_selectedChatIndex!=-1 && currentTab == 2 && currentTab == m_tabIndex)
-      ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
+      ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
     ui->tabWidget->setCurrentIndex(currentTab);
 }
 
@@ -361,5 +361,12 @@ void ChatPage::on_btn_logout_clicked()
 
     });
     req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
+}
+
+
+void ChatPage::on_btn_join_channel_clicked()
+{
+    AddChat newChannel(m_token,CHANNEL_CHAT,"/joinchannel");
+    newChannel.exec();
 }
 
