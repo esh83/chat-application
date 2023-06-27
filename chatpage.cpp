@@ -95,14 +95,14 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
      connect(m_workerchat , &WorkerChat::chatsReady,this , &ChatPage::handleChatResult);
      connect(m_workerchat , &WorkerChat::chatSended,this , &ChatPage::handleChatSended);
      connect(m_workerchat , &WorkerChat::failedWrite,this , &ChatPage::handleSendingFailed);
-
+    //SET THE TIMER TO UPDATE DATA EVERY 10 SECOND
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getUserList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getChannelList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
     m_workerThread->start();
-    timer->start(15000);
+    timer->start(10000);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
