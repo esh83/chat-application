@@ -192,18 +192,20 @@ void ChatPage::handleChatResult(QVector<chatMsg> result)
 
 void ChatPage::handleChatSended()
 {
-     ui->btn_sendMessage->setIcon(QIcon(":/src/img/send_icon.png"));
+
     ui->btn_sendMessage->setDisabled(false);
     ui->chat_title->setText("loading ...");
     QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
     ui->input_message->clear();
+     ui->btn_sendMessage->setIcon(QIcon(":/src/img/send_icon.png"));
 }
 
-void ChatPage::handleSendingFailed()
+void ChatPage::handleSendingFailed(QString err)
 {
-    ui->btn_sendMessage->setIcon(QIcon(":/src/img/send_icon.png"));
+
     ui->btn_sendMessage->setDisabled(false);
-    QMessageBox::warning(this ,"Error" , "can not send your message");
+    QMessageBox::warning(this ,"Error" , err);
+    ui->btn_sendMessage->setIcon(QIcon(":/src/img/send_icon.png"));
 
 }
 

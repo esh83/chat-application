@@ -38,7 +38,7 @@ private slots:
     void handleSuccessListResult();
     void handleChatResult(QVector<chatMsg> result);
     void handleChatSended();
-    void handleSendingFailed();
+    void handleSendingFailed(QString err);
 
     void on_btn_logout_clicked();
     void on_tabWidget_currentChanged(int index);

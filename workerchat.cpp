@@ -101,17 +101,18 @@ void WorkerChat::sendChat()
     RequestHandler *req_handler = new RequestHandler(this);
     connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
         qDebug()<< " error sending message : " <<  err;
-        emit failedWrite();
+        emit failedWrite("error seding message");
     });
     connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
         QString code = jsonObj.value("code").toString();
+         QString message = jsonObj.value("message").toString();
         if (code == "200") {
            emit chatSended();
         } else if(code == "404") {
-            emit failedWrite();
+            emit failedWrite(message);
             qDebug() << "404 error in sending message";
         } else {
-             emit failedWrite();
+             emit failedWrite(message);
             qDebug() << "error sending message";
         }
     });

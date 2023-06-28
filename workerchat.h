@@ -31,7 +31,7 @@ public slots:
 signals:
     void chatsReady(QVector<chatMsg> result);
     void failedRead();
-    void failedWrite();
+    void failedWrite(QString err);
     void chatSended();
 
 
