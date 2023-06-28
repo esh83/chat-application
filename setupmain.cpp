@@ -61,7 +61,7 @@ void SetupMain::on_btn_start_login_clicked()
 void SetupMain::loginCheck(QString username,QString password)
 {
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "You are already logged in", "Terminate All Other sessions?",
+    reply = QMessageBox::question(this, "Error", "You are already logged in . Do you want to terminate all other sessions and login?",
                                   QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes)
@@ -95,7 +95,6 @@ void SetupMain::loginCheck(QString username,QString password)
         check=true;
         ui->input_login_password->clear();
         ui->input_login_username->clear();
-        ui->stackedWidget->setCurrentIndex(0);
     }
 }
 

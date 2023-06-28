@@ -53,7 +53,8 @@ void WorkerChat::getChats()
 
         }
         else{
-            qDebug() << "error code : "+ code;
+             QString message = jsonObj.value("message").toString();
+            qDebug() << "error fetching chat data error code : " << code << "message : " << message;
         }
     });
 
