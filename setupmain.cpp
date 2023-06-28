@@ -15,7 +15,7 @@
 
 SetupMain::SetupMain(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::SetupMain)
+    ui(new Ui::SetupMain),check(true)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
@@ -58,6 +58,47 @@ void SetupMain::on_btn_start_login_clicked()
     ui->stackedWidget->setCurrentIndex(1);
 }
 
+void SetupMain::loginCheck(QString username,QString password)
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "You are already logged in", "Terminate All Other sessions?",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+        RequestHandler *req_handler = new RequestHandler(this);
+        connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
+            qDebug()<<err;
+            QMessageBox::warning(this ,"error" ,"something went wrong");
+            check=true;
+        });
+        connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
+            QString message = jsonObj.value("message").toString();
+            QString code = jsonObj.value("code").toString();
+            if (code == "200")
+            {
+                //RESET LOCAL DATABASE
+                DB::emptyTblInfo();
+                DB::emptyTblChatsList();
+                DB::emptyTblChats();
+                check=true;
+                SetupMain::on_btn_login_login_clicked();
+            }
+            else{
+                QMessageBox::warning(this ,"error" ,message);
+                check=true;
+            }
+        });
+        req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+username+"&password="+password);
+    } else
+    {
+        check=true;
+        ui->input_login_password->clear();
+        ui->input_login_username->clear();
+        ui->stackedWidget->setCurrentIndex(0);
+    }
+}
+
 
 
 void SetupMain::on_btn_signup_cancel_clicked()
@@ -95,15 +136,21 @@ void SetupMain::on_btn_login_login_clicked()
        QString code = jsonObj.value("code").toString();
        QString token = jsonObj.value("token").toString();
 
-        if (code == "200")
+        if (code == "200" && check)
         {
+           if(message=="You are already logged in!")
+            {
+                check=false;
+                loginCheck(username,password);
+            }
+           else{
             DB::insertTblInfo(token,username,password ,"John Doe");
             ChatPage* chat = new ChatPage(password ,username , token);
             connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
             connect(chat , SIGNAL(accepted()) , this , SLOT(show()));
             chat->show();
             this->hide();
-
+            }
         }
         else if(code == "404")
         {
@@ -114,6 +161,7 @@ void SetupMain::on_btn_login_login_clicked()
 
         }else{
             QMessageBox::warning(this ,"error" ,"login failed");
+            check=true;
         }
         ui->btn_login_login->setText("Login");
         ui->btn_login_login->setDisabled(false);

@@ -102,7 +102,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
     m_workerThread->start();
-    timer->start(15000);
+    timer->start(1500);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);

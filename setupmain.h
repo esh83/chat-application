@@ -23,7 +23,7 @@ private slots:
 
     void on_btn_start_login_clicked();
 
-
+    void loginCheck(QString username,QString password);
 
     void on_btn_signup_cancel_clicked();
 
@@ -35,6 +35,7 @@ private slots:
 
 private:
     Ui::SetupMain *ui;
+    bool check;
 };
 
 #endif // SETUPMAIN_H
