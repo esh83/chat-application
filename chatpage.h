@@ -14,6 +14,7 @@
 #include "requesthandler.h"
 #include "workerlist.h"
 #include "workerchat.h"
+#include "workerlogout.h"
 namespace Ui {
 class ChatPage;
 }
@@ -39,6 +40,8 @@ private slots:
     void handleChatResult(QVector<chatMsg> result);
     void handleChatSended();
     void handleSendingFailed(QString err);
+    void handleLogoutSuccess();
+    void handleLogoutFailed(QString err);
 
     void on_btn_logout_clicked();
     void on_tabWidget_currentChanged(int index);
@@ -66,6 +69,7 @@ private:
     QString m_currentChatName;
     WorkerList *m_workerlist;
     WorkerChat *m_workerchat;
+    WorkerLogout *m_workerlogout;
     QThread *m_workerThread;
     bool m_shoud_scroll{false};
     int m_chats_count =0;

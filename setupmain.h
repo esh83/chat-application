@@ -35,7 +35,7 @@ private slots:
 
 private:
     Ui::SetupMain *ui;
-    bool check;
+    bool m_loading{false};
 };
 
 #endif // SETUPMAIN_H

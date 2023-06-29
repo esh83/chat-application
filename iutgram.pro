@@ -16,7 +16,8 @@ SOURCES += \
     requesthandler.cpp \
     setupmain.cpp \
     workerchat.cpp \
-    workerlist.cpp
+    workerlist.cpp \
+    workerlogout.cpp
 
 HEADERS += \
     addchat.h \
@@ -26,7 +27,8 @@ HEADERS += \
     requesthandler.h \
     setupmain.h \
     workerchat.h \
-    workerlist.h
+    workerlist.h \
+    workerlogout.h
 
 FORMS += \
     addchat.ui \

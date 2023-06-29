@@ -11,7 +11,7 @@ class WorkerList : public QObject
 {
     Q_OBJECT
 public :
-    WorkerList(QString token ="" ,QObject *parent = nullptr);
+    explicit WorkerList(QString token ="" ,QObject *parent = nullptr);
     QString m_token;
 private:
     void getList(int chatType,QString endpoint);

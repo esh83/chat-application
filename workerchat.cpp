@@ -25,6 +25,25 @@ void WorkerChat::getChats()
     RequestHandler *req_handler = new RequestHandler(this);
     connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
         qDebug()<< "error fetching chat data " <<err;
+        //READ MESSAGES FROM LOCAL DATABASE
+        QVector<chatMsg> result;
+        try{
+            chatMsg msg_strcut;
+            QVector<DB::TableChats> list = DB::selectTblChats(m_type != PERSONAL_CHAT ? "*": m_username , m_des);
+            for(auto it = list.begin();it!=list.end();it++){
+                msg_strcut.msg = (m_type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss"));
+                if(m_username!=(*it).src || m_type == CHANNEL_CHAT)
+                    msg_strcut.isRight = false;
+                else
+                    msg_strcut.isRight = true;
+                result.push_back(msg_strcut);
+
+            }
+
+        }catch(QString &err){
+            qDebug() << err;
+        }
+        emit chatsReady(result);
     });
     connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj){
         QString code = jsonObj.value("code").toString();
@@ -56,9 +75,6 @@ void WorkerChat::getChats()
              QString message = jsonObj.value("message").toString();
             qDebug() << "error fetching chat data error code : " << code << "message : " << message;
         }
-    });
-
-    connect(req_handler,&RequestHandler::done,[=](){
         //READ MESSAGES FROM LOCAL DATABASE
         QVector<chatMsg> result;
         try{
@@ -79,6 +95,7 @@ void WorkerChat::getChats()
         }
         emit chatsReady(result);
     });
+
     QString date_param = (last_date != "") ? ("&date=" + last_date) : "";
     req_handler->fetchData(QString(API_ADRESS)+ "/" + m_endpoint + "?token="+m_token+"&dst="+m_des+date_param);
 }

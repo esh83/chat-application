@@ -15,7 +15,7 @@
 
 SetupMain::SetupMain(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::SetupMain),check(true)
+    ui(new Ui::SetupMain)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
@@ -70,29 +70,24 @@ void SetupMain::loginCheck(QString username,QString password)
         connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
             qDebug()<<err;
             QMessageBox::warning(this ,"error" ,"something went wrong");
-            check=true;
+            m_loading=false;
         });
         connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
             QString message = jsonObj.value("message").toString();
             QString code = jsonObj.value("code").toString();
             if (code == "200")
             {
-                //RESET LOCAL DATABASE
-                DB::emptyTblInfo();
-                DB::emptyTblChatsList();
-                DB::emptyTblChats();
-                check=true;
                 SetupMain::on_btn_login_login_clicked();
             }
             else{
                 QMessageBox::warning(this ,"error" ,message);
-                check=true;
             }
+            m_loading=false;
         });
         req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+username+"&password="+password);
     } else
     {
-        check=true;
+        m_loading=false;
         ui->input_login_password->clear();
         ui->input_login_username->clear();
     }
@@ -135,15 +130,21 @@ void SetupMain::on_btn_login_login_clicked()
        QString code = jsonObj.value("code").toString();
        QString token = jsonObj.value("token").toString();
 
-        if (code == "200" && check)
+        if (code == "200")
         {
            if(message=="You are already logged in!")
             {
-                check=false;
+                m_loading=true;
                 loginCheck(username,password);
             }
            else{
-            DB::insertTblInfo(token,username,password ,"John Doe");
+                 m_loading=false;
+                try{
+                      DB::insertTblInfo(token,username,password ,"John Doe");
+                }catch(QString err){
+                      qDebug() << err;
+                }
+
             ChatPage* chat = new ChatPage(password ,username , token);
             connect(chat , SIGNAL(finished(int)) , chat , SLOT(deleteLater()));
             connect(chat , SIGNAL(accepted()) , this , SLOT(show()));
@@ -153,17 +154,21 @@ void SetupMain::on_btn_login_login_clicked()
         }
         else if(code == "404")
         {
+            m_loading=false;
             QMessageBox::warning(this ,"error" ,"user not found");
 
         }else if(code == "401"){
+             m_loading=false;
             QMessageBox::warning(this ,"error" ,message);
 
         }else{
+             m_loading=false;
             QMessageBox::warning(this ,"error" ,"login failed");
-            check=true;
         }
+        if(!m_loading){
         ui->btn_login_login->setText("Login");
         ui->btn_login_login->setDisabled(false);
+        }
     });
     req_hadler->fetchData(QString(API_ADRESS)+"/login?username="+username+"&password="+password);
 }

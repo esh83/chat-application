@@ -16,7 +16,7 @@ class WorkerChat : public QObject
 {
     Q_OBJECT
 public :
-    WorkerChat(QString token ="" ,QObject *parent = nullptr);
+    explicit WorkerChat(QString token ="" ,QObject *parent = nullptr);
     QString m_token;
     QString m_endpoint;
     QString m_des;

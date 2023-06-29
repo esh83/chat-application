@@ -59,7 +59,7 @@ void DB::insertTblInfo(QString token , QString username, QString password,QStrin
 
 void DB::emptyTblInfo()
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     qry.prepare( "UPDATE tblinfo SET token=\"\",username=\"\",password=\"\",title=\"\"" );
 
     if( !qry.exec() ){
@@ -127,10 +127,12 @@ QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
 
 void DB::emptyTblChatsList()
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     qry.prepare("DELETE FROM tblchatslist");
     if( !qry.exec() ){
         throw qry.lastError().text();
+    }else{
+        qDebug() << "emptyed";
     }
 }
 
@@ -157,10 +159,12 @@ void DB::createTblChats()
 }
 void DB::emptyTblChats()
 {
-    QSqlQuery qry;
+    QSqlQuery qry(QSqlDatabase::database("worker_db"));
     qry.prepare("DELETE FROM tblchats");
     if( !qry.exec() ){
         throw qry.lastError().text();
+    }else{
+        qDebug() << "emptyed";
     }
 }
 void DB::insertTblChats(QString src, QString dst, QString body,QString date)

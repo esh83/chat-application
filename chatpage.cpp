@@ -74,35 +74,46 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
 
     // CONFIG THE THREAD TO RUN REPEATEDLY TO UPDATE CHAT DATA
     m_workerThread  = new QThread;
+    //INITIALIZE WORKER LOGOUT
+    m_workerlogout = new WorkerLogout(m_username , m_password);
+    //INITIALIZE WORKER LIST
     m_workerlist = new WorkerList(m_token);
+    //INITIALIZE WORKER CHAT
     m_workerchat = new WorkerChat(m_token);
     m_workerchat->m_endpoint = "getuserchats";
     m_workerchat->m_type = PERSONAL_CHAT;
     m_workerchat->m_username = m_username;
     m_workerchat->m_des = "";
+    //MOVE ALL THE WORKERS TO THE THREAD
     m_workerlist->moveToThread(m_workerThread);
     m_workerchat->moveToThread(m_workerThread);
+    m_workerlogout->moveToThread(m_workerThread);
+    //THREAD SINGNALS AND SLOTS
     connect(m_workerThread, &QThread::finished, m_workerlist, &QObject::deleteLater);
     connect(m_workerThread, &QThread::finished, m_workerchat, &QObject::deleteLater);
+       connect(m_workerThread, &QThread::finished, m_workerlogout, &QObject::deleteLater);
     connect(m_workerThread, &QThread::started, m_workerlist, &WorkerList::openDB);
     //WORKER LIST SIGNALS AND SLOTS
     connect(m_workerlist, &WorkerList::listUserReady,this , &ChatPage::handleUserListResult);
     connect(m_workerlist, &WorkerList::listChannelReady,this , &ChatPage::handleChannelListResult);
     connect(m_workerlist, &WorkerList::listGroupReady,this , &ChatPage::handleGroupListResult);
     connect(m_workerlist, &WorkerList::failed,this , &ChatPage::handleFailedListResult);
-       connect(m_workerlist, &WorkerList::success,this , &ChatPage::handleSuccessListResult);
+    connect(m_workerlist, &WorkerList::success,this , &ChatPage::handleSuccessListResult);
      //WORKER CHAT SIGNALS AND SLOTS
      connect(m_workerchat , &WorkerChat::chatsReady,this , &ChatPage::handleChatResult);
      connect(m_workerchat , &WorkerChat::chatSended,this , &ChatPage::handleChatSended);
      connect(m_workerchat , &WorkerChat::failedWrite,this , &ChatPage::handleSendingFailed);
-    //SET THE TIMER TO UPDATE DATA EVERY 10 SECOND
+     //WORKER LOGOUT SIGNALS AND SLOTS
+     connect(m_workerlogout , &WorkerLogout::success,this , &ChatPage::handleLogoutSuccess);
+     connect(m_workerlogout ,  &WorkerLogout::failed,this , &ChatPage::handleLogoutFailed);
+    //SET THE TIMER TO UPDATE DATA EVERY 5 SECOND
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getUserList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getChannelList);
     connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
     connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
     m_workerThread->start();
-    timer->start(10000);
+    timer->start(5000);
 
     //GET INITIAL DATA
     QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
@@ -176,7 +187,7 @@ void ChatPage::handleChatResult(QVector<chatMsg> result)
       m_shoud_scroll = true;
     }
     m_chats_count = result.length();
-    ui->chat_title->setText(m_currentChatName);
+
     ui->chatsList->clear();
     for(auto it = result.begin();  it !=result.end(); it++){
       QListWidgetItem *item = new QListWidgetItem((*it).msg , ui->chatsList);
@@ -188,6 +199,7 @@ void ChatPage::handleChatResult(QVector<chatMsg> result)
     if(m_shoud_scroll)
       ui->chatsList->scrollToBottom();
     m_shoud_scroll = false;
+     ui->chat_title->setText(m_currentChatName);
 }
 
 void ChatPage::handleChatSended()
@@ -206,6 +218,19 @@ void ChatPage::handleSendingFailed(QString err)
     ui->btn_sendMessage->setDisabled(false);
     QMessageBox::warning(this ,"Error" , err);
     ui->btn_sendMessage->setIcon(QIcon(":/src/img/send_icon.png"));
+
+}
+
+void ChatPage::handleLogoutSuccess()
+{
+  this->accept();
+}
+
+void ChatPage::handleLogoutFailed(QString err)
+{
+   QMessageBox::warning(this , "error" , err);
+  ui->btn_logout->setDisabled(false);
+  ui->btn_logout->setIcon(QIcon(":/src/img/out.png"));
 
 }
 
@@ -339,36 +364,10 @@ void ChatPage::on_btn_logout_clicked()
     connect(movie, &QMovie::frameChanged, [=]{
         ui->btn_logout->setIcon(movie->currentPixmap());
     });
+    connect(m_workerlogout , &WorkerLogout::done , movie , &QMovie::deleteLater);
     movie->start();
-    RequestHandler *req_handler = new RequestHandler(this);
-    connect(req_handler,&RequestHandler::errorOccured,[=](QString err){
-        qDebug()<<err;
-        QMessageBox::warning(this ,"error" ,"something went wrong");
-        ui->btn_logout->setDisabled(false);
-        delete movie;
-        ui->btn_logout->setIcon(QIcon(":/src/img/out.png"));
-    });
-    connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
-        QString message = jsonObj.value("message").toString();
-        QString code = jsonObj.value("code").toString();
-        if (code == "200")
-        {
-            //RESET LOCAL DATABASE
-            DB::emptyTblInfo();
-            DB::emptyTblChatsList();
-            DB::emptyTblChats();
-            //CLOSE THE CHAT PAGE
-            this->accept();
-        }
-        else{
-            QMessageBox::warning(this ,"error" ,message);
-        }
-        ui->btn_logout->setDisabled(false);
-        delete movie;
-        ui->btn_logout->setIcon(QIcon(":/src/img/out.png"));
+    QTimer::singleShot(0 ,m_workerlogout,&WorkerLogout::logout);
 
-    });
-    req_handler->fetchData(QString(API_ADRESS)+"/logout?username="+m_username+"&password="+m_password);
 }
 
 
