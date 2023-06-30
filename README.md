@@ -1,7 +1,8 @@
 <h1>
-  chat application developed using QT widget for ui and cpp language for backend
+  desktop chat application
 </h1>
 <p>
+  simple chat application developed using QT widget for ui and cpp language for backend .
   the application has so many cool features which some are listed here :
 </p>
 <ul>
@@ -18,4 +19,4 @@
 <span>chat page</span>
 <img src=""  alt="chat page"/>
 <p>application's source code is available in src folder</p>
-<p>if you want to just test and run the application you can download and use the installer.exe file availabe in installer folder</p>
+<p>if you want to just test and run the application you can download and use the installer.exe file availabe in installer folder to install the application</p>
