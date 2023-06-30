@@ -364,7 +364,7 @@ void ChatPage::on_btn_logout_clicked()
     connect(movie, &QMovie::frameChanged, [=]{
         ui->btn_logout->setIcon(movie->currentPixmap());
     });
-    connect(m_workerlogout , &WorkerLogout::done , movie , &QMovie::deleteLater);
+    connect(m_workerlogout , &WorkerLogout::failed , movie , &QMovie::deleteLater);
     movie->start();
     QTimer::singleShot(0 ,m_workerlogout,&WorkerLogout::logout);
 
