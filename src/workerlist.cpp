@@ -2,7 +2,7 @@
 #include <QCoreApplication>
 
 WorkerList::WorkerList(QString token,QObject *parent)
-    : QObject{parent} , m_token{token}
+    : QObject{parent} , m_token{token} , showMessage{true}
 {
 
 }
@@ -50,6 +50,10 @@ void WorkerList::getList(int chatType , QString endpoint)
         }
         else {
             qDebug() << "error fetching list data from api :" << code;
+            if(code=="401" && showMessage){
+            showMessage=false;
+            emit expired();
+            }
         }
 
     });

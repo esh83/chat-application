@@ -37,6 +37,7 @@ private slots:
     void handleGroupListResult(QVector<QString> result);
     void handleFailedListResult();
     void handleSuccessListResult();
+    void handleExpiredResult();
     void handleChatResult(QVector<chatMsg> result);
     void handleChatSended();
     void handleSendingFailed(QString err);

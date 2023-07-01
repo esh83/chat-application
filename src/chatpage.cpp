@@ -12,6 +12,7 @@
 #include "addchat.h"
 #include <QThread>
 #include <QMovie>
+#include <QScrollBar>
 QString message_list_styles = "QListWidget#%1{"
                   "background-color:white;"
                   "border:none;"
@@ -99,6 +100,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     connect(m_workerlist, &WorkerList::listGroupReady,this , &ChatPage::handleGroupListResult);
     connect(m_workerlist, &WorkerList::failed,this , &ChatPage::handleFailedListResult);
     connect(m_workerlist, &WorkerList::success,this , &ChatPage::handleSuccessListResult);
+    connect(m_workerlist, &WorkerList::expired,this , &ChatPage::handleExpiredResult);
      //WORKER CHAT SIGNALS AND SLOTS
      connect(m_workerchat , &WorkerChat::chatsReady,this , &ChatPage::handleChatResult);
      connect(m_workerchat , &WorkerChat::chatSended,this , &ChatPage::handleChatSended);
@@ -130,43 +132,63 @@ ChatPage::~ChatPage()
 }
 void ChatPage::handleUserListResult(QVector<QString> result)
 {
+    int previousScrollValue = ui->messagesList_chat->verticalScrollBar()->value();
+
     qDebug() << "thread updated!";
     ui->messagesList_chat->clear();
+
     //ADD Result to list widget
+
     for (auto it = result.begin(); it != result.end(); it++){
        ui->messagesList_chat->addItem((*it));
     }
+
     if(m_selectedChatIndex!=-1 && currentTab == 0 && currentTab == m_tabIndex)
        ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
+
     ui->tabWidget->setCurrentIndex(currentTab);
+
+    ui->messagesList_chat->verticalScrollBar()->setValue(previousScrollValue);
 
 }
 void ChatPage::handleChannelListResult(QVector<QString> result)
 {
 
+    int previousScrollValue = ui->messagesList_channel->verticalScrollBar()->value();
+
 
     ui->messagesList_channel->clear();
     //ADD Result to list widget
+
     for (auto it = result.begin(); it != result.end(); it++){
       ui->messagesList_channel->addItem((*it));
-
     }
+
     if(m_selectedChatIndex!=-1 && currentTab == 1 && currentTab == m_tabIndex)
       ui->messagesList_channel->setCurrentRow(m_selectedChatIndex);
+
     ui->tabWidget->setCurrentIndex(currentTab);
+
+    ui->messagesList_channel->verticalScrollBar()->setValue(previousScrollValue);
 
 }
 void ChatPage::handleGroupListResult(QVector<QString> result)
 {
+    int previousScrollValue = ui->messagesList_group->verticalScrollBar()->value();
 
     ui->messagesList_group->clear();
     //ADD Result to list widget
+
     for (auto it = result.begin(); it != result.end(); it++){
       ui->messagesList_group->addItem((*it));
     }
+
     if(m_selectedChatIndex!=-1 && currentTab == 2 && currentTab == m_tabIndex)
       ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
+
     ui->tabWidget->setCurrentIndex(currentTab);
+
+    ui->messagesList_group->verticalScrollBar()->setValue(previousScrollValue);
 }
 
 void ChatPage::handleFailedListResult()
@@ -179,6 +201,13 @@ void ChatPage::handleSuccessListResult()
 {
     ui->lbl_con_status->setStyleSheet("background-color:rgba(15, 184, 0,0.6);color:white;font-weight:bold;padding:5px;");
     ui->lbl_con_status->setText("you are online");
+}
+
+void ChatPage::handleExpiredResult()
+{
+     QMessageBox::warning(this, "Error", "Your token has expired , please login again" , QMessageBox::Ok);
+    this->accept();
+
 }
 
 void ChatPage::handleChatResult(QVector<chatMsg> result)

@@ -15,6 +15,7 @@ public :
     QString m_token;
 private:
     void getList(int chatType,QString endpoint);
+    bool showMessage;
 public slots:
     void getUserList();
     void getGroupList();
@@ -27,6 +28,8 @@ signals:
     void listChannelReady(QVector<QString> result);
     void failed();
     void success();
+    void expired ();
+
 
 };
 
