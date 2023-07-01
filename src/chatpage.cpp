@@ -72,15 +72,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
         "}"
 
         );
-    //AJUST SCROLLBAR OF CHATS BOX
-   QScrollBar *chats_scroll = ui->chatsList->verticalScrollBar();
-    connect(chats_scroll,&QScrollBar::valueChanged,[=](int value){
-       if(value == chats_scroll->maximum()){
-           ui->btn_scrollBottom->hide();
-       }else{
-           ui->btn_scrollBottom->show();
-       }
-   });
+
     // CONFIG THE THREAD TO RUN REPEATEDLY TO UPDATE CHAT DATA
     m_workerThread  = new QThread;
     //INITIALIZE WORKER LOGOUT
@@ -378,7 +370,7 @@ void ChatPage::on_tabWidget_currentChanged(int index)
            QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
     }
 
-    else if(currentTab==1){ 
+    else if(currentTab==1){
              QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
     }
 
