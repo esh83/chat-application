@@ -140,7 +140,6 @@ ChatPage::~ChatPage()
 }
 void ChatPage::handleUserListResult(QVector<QString> result)
 {
-    int previousScrollValue = ui->messagesList_chat->verticalScrollBar()->value();
 
     qDebug() << "thread updated!";
     ui->messagesList_chat->clear();
@@ -156,13 +155,11 @@ void ChatPage::handleUserListResult(QVector<QString> result)
 
     ui->tabWidget->setCurrentIndex(currentTab);
 
-    ui->messagesList_chat->verticalScrollBar()->setValue(previousScrollValue);
 
 }
 void ChatPage::handleChannelListResult(QVector<QString> result)
 {
 
-    int previousScrollValue = ui->messagesList_channel->verticalScrollBar()->value();
 
 
     ui->messagesList_channel->clear();
@@ -177,12 +174,10 @@ void ChatPage::handleChannelListResult(QVector<QString> result)
 
     ui->tabWidget->setCurrentIndex(currentTab);
 
-    ui->messagesList_channel->verticalScrollBar()->setValue(previousScrollValue);
 
 }
 void ChatPage::handleGroupListResult(QVector<QString> result)
 {
-    int previousScrollValue = ui->messagesList_group->verticalScrollBar()->value();
 
     ui->messagesList_group->clear();
     //ADD Result to list widget
@@ -196,7 +191,6 @@ void ChatPage::handleGroupListResult(QVector<QString> result)
 
     ui->tabWidget->setCurrentIndex(currentTab);
 
-    ui->messagesList_group->verticalScrollBar()->setValue(previousScrollValue);
 }
 
 void ChatPage::handleFailedListResult()
