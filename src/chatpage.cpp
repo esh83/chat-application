@@ -13,6 +13,7 @@
 #include <QThread>
 #include <QMovie>
 #include <QScrollBar>
+
 QString message_list_styles = "QListWidget#%1{"
                   "background-color:white;"
                   "border:none;"
@@ -72,6 +73,16 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
         "}"
 
         );
+
+    //AJUST SCROLLBAR OF CHATS BOX
+    QScrollBar *chats_scroll = ui->chatsList->verticalScrollBar();
+    connect(chats_scroll,&QScrollBar::valueChanged,[=](int value){
+        if(value == chats_scroll->maximum()){
+            ui->btn_scrollBottom->hide();
+        }else{
+            ui->btn_scrollBottom->show();
+        }
+    });
 
     // CONFIG THE THREAD TO RUN REPEATEDLY TO UPDATE CHAT DATA
     m_workerThread  = new QThread;
