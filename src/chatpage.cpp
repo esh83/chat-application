@@ -178,6 +178,7 @@ void ChatPage::handleChannelListResult(QVector<QString> result)
 }
 void ChatPage::handleGroupListResult(QVector<QString> result)
 {
+    int previousScrollValue = ui->messagesList_group->verticalScrollBar()->value();
 
     ui->messagesList_group->clear();
     //ADD Result to list widget
@@ -191,6 +192,7 @@ void ChatPage::handleGroupListResult(QVector<QString> result)
 
     ui->tabWidget->setCurrentIndex(currentTab);
 
+    ui->messagesList_group->verticalScrollBar()->setValue(previousScrollValue);
 }
 
 void ChatPage::handleFailedListResult()
