@@ -129,7 +129,7 @@ void SetupMain::on_btn_login_login_clicked()
        QString message = jsonObj.value("message").toString();
        QString code = jsonObj.value("code").toString();
        QString token = jsonObj.value("token").toString();
-
+       qDebug() << "token :" <<token;
         if (code == "200")
         {
            if(message=="You are already logged in!")

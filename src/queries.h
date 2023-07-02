@@ -31,16 +31,16 @@ struct TableChats{
 void createTblInfo();
 TableInfo selectTblinfo();
 void insertTblInfo(QString token , QString username, QString password,QString title);
-void emptyTblInfo();
+void emptyTblInfo(bool isDefault=false);
 //table chats_list functions
 void createTblChatsList();
 void insertTblChatsList(QString username , QString title, int type);
 QVector<TableChatsList> selectTblChatsList(int type);
-void emptyTblChatsList();
+void emptyTblChatsList(bool isDefault=false);
 void deleteTblChatsList(int type);
 //table chats functions
 void createTblChats();
-void emptyTblChats();
+void emptyTblChats(bool isDefault=false);
 void insertTblChats(QString src, QString dst, QString body,QString date);
 QVector<TableChats> selectTblChats(QString src , QString dst);
 }

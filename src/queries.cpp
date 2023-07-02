@@ -57,9 +57,9 @@ void DB::insertTblInfo(QString token , QString username, QString password,QStrin
     }
 }
 
-void DB::emptyTblInfo()
+void DB::emptyTblInfo(bool isDefault)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_db") : QSqlDatabase::database());
     qry.prepare( "UPDATE tblinfo SET token=\"\",username=\"\",password=\"\",title=\"\"" );
 
     if( !qry.exec() ){
@@ -125,9 +125,9 @@ QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
     return list;
 }
 
-void DB::emptyTblChatsList()
+void DB::emptyTblChatsList(bool isDefault)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_db") : QSqlDatabase::database());
     qry.prepare("DELETE FROM tblchatslist");
     if( !qry.exec() ){
         throw qry.lastError().text();
@@ -157,9 +157,9 @@ void DB::createTblChats()
     else
         qDebug() << "Table Chats created!";
 }
-void DB::emptyTblChats()
+void DB::emptyTblChats(bool isDefault)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_db") : QSqlDatabase::database());
     qry.prepare("DELETE FROM tblchats");
     if( !qry.exec() ){
         throw qry.lastError().text();

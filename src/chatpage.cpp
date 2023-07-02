@@ -217,6 +217,10 @@ void ChatPage::handleSuccessListResult()
 void ChatPage::handleExpiredResult()
 {
      QMessageBox::warning(this, "Error", "Your token has expired , please login again" , QMessageBox::Ok);
+    //RESET LOCAL DATABASE
+    DB::emptyTblInfo(true);
+    DB::emptyTblChatsList(true);
+    DB::emptyTblChats(true);
     this->accept();
 
 }
