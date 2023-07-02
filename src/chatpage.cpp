@@ -227,12 +227,6 @@ void ChatPage::handleExpiredResult()
 
 void ChatPage::handleChatResult(QVector<chatMsg> result)
 {
-    if(m_prevChatName != "" && m_prevChatName != m_currentChatName){
-    m_prevChatName = m_currentChatName;
-     QTimer::singleShot(0,m_workerchat ,&WorkerChat::getChats);
-    return;
-    }
-
     if(result.length() > m_chats_count){
       m_shoud_scroll = true;
     }
@@ -290,7 +284,6 @@ void ChatPage::on_messagesList_chat_itemClicked(QListWidgetItem* item)
     m_chats_count = 0;
     m_selectedChatIndex = ui->messagesList_chat->currentRow();
     m_tabIndex = currentTab;
-    m_prevChatName = m_currentChatName;
     m_currentChatName = item->text();
     ui->messagesList_channel->setCurrentRow(-1);
     ui->messagesList_group->setCurrentRow(-1);
@@ -308,7 +301,6 @@ void ChatPage::on_messagesList_channel_itemClicked(QListWidgetItem *item)
       m_chats_count = 0;
      m_selectedChatIndex = ui->messagesList_channel->currentRow();
     m_tabIndex = currentTab;
-     m_prevChatName = m_currentChatName;
     m_currentChatName = item->text();
     ui->messagesList_chat->setCurrentRow(-1);
     ui->messagesList_group->setCurrentRow(-1);
@@ -326,7 +318,6 @@ void ChatPage::on_messagesList_group_itemClicked(QListWidgetItem *item)
      m_chats_count = 0;
     m_selectedChatIndex = ui->messagesList_group->currentRow();
     m_tabIndex = currentTab;
-    m_prevChatName = m_currentChatName;
     m_currentChatName = item->text();
     ui->messagesList_channel->setCurrentRow(-1);
     ui->messagesList_chat->setCurrentRow(-1);
