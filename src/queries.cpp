@@ -111,13 +111,16 @@ QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
     }
     else
     {
-
+        int titleIndex = qry.record().indexOf("title");
+         int usernameIndex = qry.record().indexOf("username");
+         int typeIndex = qry.record().indexOf("type");
+         list.reserve(qry.size());
         while(qry.next()){
             TableChatsList tbl;
 
-            tbl.title = qry.value(qry.record().indexOf("title")).toString();
-            tbl.username = qry.value(qry.record().indexOf("username")).toString();
-            tbl.type = qry.value(qry.record().indexOf("type")).toInt();
+            tbl.title = qry.value(titleIndex).toString();
+            tbl.username = qry.value(usernameIndex).toString();
+            tbl.type = qry.value(typeIndex).toInt();
             list.append(tbl);
         }
 
@@ -217,14 +220,18 @@ QVector<DB::TableChats> DB::selectTblChats(QString src, QString dst)
     }
     else
     {
-
+        int srcIndex = qry.record().indexOf("src");
+        int dstIndex = qry.record().indexOf("dst");
+        int bodyIndex = qry.record().indexOf("body");
+        int dateIndex = qry.record().indexOf("date");
+        list.reserve(qry.size());
         while(qry.next()){
             TableChats tbl;
 
-            tbl.src = qry.value(qry.record().indexOf("src")).toString();
-            tbl.dst = qry.value(qry.record().indexOf("dst")).toString();
-            tbl.body = qry.value(qry.record().indexOf("body")).toString();
-            tbl.date = qry.value(qry.record().indexOf("date")).toString();
+            tbl.src = qry.value(srcIndex).toString();
+            tbl.dst = qry.value(dstIndex).toString();
+            tbl.body = qry.value(bodyIndex).toString();
+            tbl.date = qry.value(dateIndex).toString();
             list.append(tbl);
         }
 
