@@ -95,16 +95,29 @@ void WorkerList::getChannelList()
      getList(CHANNEL_CHAT, "/getchannellist");
 }
 
+void WorkerList::getCurrentList()
+{
+     if(m_current_tab==PERSONAL_TAB){
+         getList(PERSONAL_CHAT, "/getuserlist");
+     }else if(m_current_tab == CHANNEL_TAB){
+          getList(CHANNEL_CHAT, "/getchannellist");
+     }else if(m_current_tab == GROUP_TAB){
+           getList(GROUP_CHAT, "/getgrouplist");
+     }
+}
+
 void WorkerList::openDB()
 {
-     QSqlDatabase::removeDatabase("worker_db");
+     QSqlDatabase::removeDatabase("worker_list_db");
      QString path = QCoreApplication::applicationDirPath();
      QString dbPath = path + "/data.db";
-     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",  "worker_db");
+     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",  "worker_list_db");
      db.setDatabaseName(dbPath);
      if (!db.open()) {
          qDebug() << db.lastError().text();
      } else {
+         db.exec("PRAGMA journal_mode = WAL;");
+         db.exec("PRAGMA cache_size = -8192;");
          qDebug() << "Database opened successfully";
      }
 }

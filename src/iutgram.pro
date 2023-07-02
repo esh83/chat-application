@@ -17,7 +17,7 @@ SOURCES += \
     setupmain.cpp \
     workerchat.cpp \
     workerlist.cpp \
-    workerlogout.cpp
+    workerother.cpp
 
 HEADERS += \
     addchat.h \
@@ -28,7 +28,7 @@ HEADERS += \
     setupmain.h \
     workerchat.h \
     workerlist.h \
-    workerlogout.h
+    workerother.h
 
 FORMS += \
     addchat.ui \

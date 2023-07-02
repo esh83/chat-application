@@ -85,9 +85,11 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     });
 
     // CONFIG THE THREAD TO RUN REPEATEDLY TO UPDATE CHAT DATA
-    m_workerThread  = new QThread;
-    //INITIALIZE WORKER LOGOUT
-    m_workerlogout = new WorkerLogout(m_username , m_password);
+    m_workerListThread  = new QThread;
+    m_workerChatThread = new QThread;
+    m_workerOthersThread = new QThread;
+    //INITIALIZE WORKER OTHER
+    m_workerother = new WorkerOther(m_username , m_password);
     //INITIALIZE WORKER LIST
     m_workerlist = new WorkerList(m_token);
     //INITIALIZE WORKER CHAT
@@ -97,14 +99,16 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
     m_workerchat->m_username = m_username;
     m_workerchat->m_des = "";
     //MOVE ALL THE WORKERS TO THE THREAD
-    m_workerlist->moveToThread(m_workerThread);
-    m_workerchat->moveToThread(m_workerThread);
-    m_workerlogout->moveToThread(m_workerThread);
+    m_workerlist->moveToThread(m_workerListThread);
+    m_workerchat->moveToThread(m_workerChatThread);
+    m_workerother->moveToThread(m_workerOthersThread);
     //THREAD SINGNALS AND SLOTS
-    connect(m_workerThread, &QThread::finished, m_workerlist, &QObject::deleteLater);
-    connect(m_workerThread, &QThread::finished, m_workerchat, &QObject::deleteLater);
-       connect(m_workerThread, &QThread::finished, m_workerlogout, &QObject::deleteLater);
-    connect(m_workerThread, &QThread::started, m_workerlist, &WorkerList::openDB);
+    connect(m_workerListThread, &QThread::finished, m_workerlist, &QObject::deleteLater);
+    connect(m_workerChatThread, &QThread::finished, m_workerchat, &QObject::deleteLater);
+    connect(m_workerOthersThread, &QThread::finished, m_workerother, &QObject::deleteLater);
+    connect(m_workerChatThread, &QThread::started, m_workerlist, &WorkerList::openDB);
+    connect(m_workerListThread, &QThread::started, m_workerchat, &WorkerChat::openDB);
+    connect(m_workerOthersThread, &QThread::started, m_workerother, &WorkerOther::openDB);
     //WORKER LIST SIGNALS AND SLOTS
     connect(m_workerlist, &WorkerList::listUserReady,this , &ChatPage::handleUserListResult);
     connect(m_workerlist, &WorkerList::listChannelReady,this , &ChatPage::handleChannelListResult);
@@ -117,28 +121,40 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
      connect(m_workerchat , &WorkerChat::chatSended,this , &ChatPage::handleChatSended);
      connect(m_workerchat , &WorkerChat::failedWrite,this , &ChatPage::handleSendingFailed);
      //WORKER LOGOUT SIGNALS AND SLOTS
-     connect(m_workerlogout , &WorkerLogout::success,this , &ChatPage::handleLogoutSuccess);
-     connect(m_workerlogout ,  &WorkerLogout::failed,this , &ChatPage::handleLogoutFailed);
+     connect(m_workerother , &WorkerOther::success,this , &ChatPage::handleLogoutSuccess);
+     connect(m_workerother ,  &WorkerOther::failed,this , &ChatPage::handleLogoutFailed);
     //SET THE TIMER TO UPDATE DATA EVERY 5 SECOND
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getUserList);
-    connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getChannelList);
-    connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getGroupList);
+    QTimer *timer = new QTimer;
+    timer->setInterval(5000);
+    timerThread = new QThread;
+    connect(timerThread, &QThread::finished, timer, &QTimer::stop);
+    connect(timerThread, &QThread::finished, timer, &QObject::deleteLater);
+    connect(timerThread, &QThread::started, [=](){timer->start();});
+    timer->moveToThread(timerThread);
+    connect(timer, &QTimer::timeout,m_workerlist , &WorkerList::getCurrentList);
     connect(timer, &QTimer::timeout,m_workerchat , &WorkerChat::getChats);
-    m_workerThread->start();
-    timer->start(5000);
-
+    m_workerListThread->start();
+    m_workerChatThread->start();
+    m_workerOthersThread->start();
+    timerThread->start();
     //GET INITIAL DATA
-    QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
-    QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
-    QTimer::singleShot(0,m_workerlist ,&WorkerList::getGroupList);
+    QTimer::singleShot(0,m_workerlist ,&WorkerList::getCurrentList);
 }
 
 ChatPage::~ChatPage()
 {
-    m_workerThread->quit();
-    m_workerThread->wait();
-    delete m_workerThread;
+    m_workerListThread->quit();
+    m_workerListThread->wait();
+    m_workerChatThread->quit();
+    m_workerChatThread->wait();
+    m_workerOthersThread->quit();
+    m_workerOthersThread->wait();
+    timerThread->quit();
+    timerThread->wait();
+    delete m_workerChatThread;
+    delete m_workerListThread;
+    delete m_workerOthersThread;
+    delete timerThread;
     delete ui;
 }
 void ChatPage::handleUserListResult(QVector<QString> result)
@@ -374,6 +390,7 @@ void ChatPage::on_btn_new_group_clicked()
 void ChatPage::on_tabWidget_currentChanged(int index)
 {
     currentTab = index ;
+    m_workerlist->m_current_tab = currentTab;
     if (index==0 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
            ui->messagesList_chat->setCurrentRow(m_selectedChatIndex);
     else if (index==1 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
@@ -381,17 +398,8 @@ void ChatPage::on_tabWidget_currentChanged(int index)
     else if (index==2 && m_selectedChatIndex!=-1 && currentTab == m_tabIndex)
            ui->messagesList_group->setCurrentRow(m_selectedChatIndex);
 
-    if(currentTab==0){
-           QTimer::singleShot(0,m_workerlist ,&WorkerList::getUserList);
-    }
+  QTimer::singleShot(0,m_workerlist ,&WorkerList::getCurrentList);
 
-    else if(currentTab==1){
-             QTimer::singleShot(0,m_workerlist ,&WorkerList::getChannelList);
-    }
-
-    else{
-               QTimer::singleShot(0,m_workerlist ,&WorkerList::getGroupList);
-    }
 
 }
 
@@ -408,9 +416,9 @@ void ChatPage::on_btn_logout_clicked()
     connect(movie, &QMovie::frameChanged, [=]{
         ui->btn_logout->setIcon(movie->currentPixmap());
     });
-    connect(m_workerlogout , &WorkerLogout::failed , movie , &QMovie::deleteLater);
+    connect(m_workerother , &WorkerOther::failed , movie , &QMovie::deleteLater);
     movie->start();
-    QTimer::singleShot(0 ,m_workerlogout,&WorkerLogout::logout);
+    QTimer::singleShot(0 ,m_workerother,&WorkerOther::logout);
 
 }
 

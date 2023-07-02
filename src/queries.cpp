@@ -59,7 +59,7 @@ void DB::insertTblInfo(QString token , QString username, QString password,QStrin
 
 void DB::emptyTblInfo(bool isDefault)
 {
-    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_db") : QSqlDatabase::database());
+    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_others_db") : QSqlDatabase::database());
     qry.prepare( "UPDATE tblinfo SET token=\"\",username=\"\",password=\"\",title=\"\"" );
 
     if( !qry.exec() ){
@@ -85,7 +85,7 @@ void DB::createTblChatsList()
 
 void DB::insertTblChatsList(QString username, QString title, int type)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(QSqlDatabase::database("worker_list_db"));
     qry.prepare( "INSERT INTO tblchatslist (username , title,type) VALUES (:uname,:tit,:typ)" );
     qry.bindValue(":uname" , username);
     qry.bindValue(":tit" , title);
@@ -102,7 +102,7 @@ void DB::insertTblChatsList(QString username, QString title, int type)
 
 QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(QSqlDatabase::database("worker_list_db"));
     QVector<DB::TableChatsList> list;
     qry.prepare( "SELECT username,title,type FROM tblchatslist WHERE type=:typ" );
     qry.bindValue(":typ" , type);
@@ -130,7 +130,7 @@ QVector<DB::TableChatsList> DB::selectTblChatsList(int type)
 
 void DB::emptyTblChatsList(bool isDefault)
 {
-    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_db") : QSqlDatabase::database());
+    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_others_db") : QSqlDatabase::database());
     qry.prepare("DELETE FROM tblchatslist");
     if( !qry.exec() ){
         throw qry.lastError().text();
@@ -142,7 +142,7 @@ void DB::emptyTblChatsList(bool isDefault)
 
 void DB::deleteTblChatsList(int type)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(QSqlDatabase::database("worker_list_db"));
     qry.prepare("DELETE FROM tblchatslist WHERE type=:typ");
     qry.bindValue(":typ",type);
     if( !qry.exec() ){
@@ -162,7 +162,7 @@ void DB::createTblChats()
 }
 void DB::emptyTblChats(bool isDefault)
 {
-    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_db") : QSqlDatabase::database());
+    QSqlQuery qry(!isDefault? QSqlDatabase::database("worker_others_db") : QSqlDatabase::database());
     qry.prepare("DELETE FROM tblchats");
     if( !qry.exec() ){
         throw qry.lastError().text();
@@ -172,7 +172,7 @@ void DB::emptyTblChats(bool isDefault)
 }
 void DB::insertTblChats(QString src, QString dst, QString body,QString date)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(QSqlDatabase::database("worker_chat_db"));
     qry.prepare( "SELECT * FROM tblchats WHERE src=:src AND dst=:dst AND body=:body AND date=:date" );
     qry.bindValue(":src" , src);
     qry.bindValue(":dst" , dst);
@@ -203,7 +203,7 @@ void DB::insertTblChats(QString src, QString dst, QString body,QString date)
 
 QVector<DB::TableChats> DB::selectTblChats(QString src, QString dst)
 {
-    QSqlQuery qry(QSqlDatabase::database("worker_db"));
+    QSqlQuery qry(QSqlDatabase::database("worker_chat_db"));
     QVector<DB::TableChats> list;
     if(src == "*"){
         qry.prepare( "SELECT src,dst,body,date FROM tblchats WHERE dst=:dst" );

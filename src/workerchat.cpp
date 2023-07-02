@@ -102,6 +102,7 @@ void WorkerChat::getChats()
 
 void WorkerChat::sendChat()
 {
+    qDebug() << "start sending chat ...\n";
     QString url;
     if(m_type == PERSONAL_CHAT){
         url = QString(API_ADRESS)+"/sendmessageuser?token="+m_token+"&dst="+m_des+"&body="+m_body;
@@ -121,6 +122,7 @@ void WorkerChat::sendChat()
         emit failedWrite("error seding message");
     });
     connect(req_handler,&RequestHandler::dataReady,[=](QJsonObject jsonObj ){
+         qDebug() << "end sending chat ...\n";
         QString code = jsonObj.value("code").toString();
          QString message = jsonObj.value("message").toString();
         if (code == "200") {
@@ -134,4 +136,21 @@ void WorkerChat::sendChat()
         }
     });
     req_handler->fetchData(url);
+
+}
+
+void WorkerChat::openDB()
+{
+    QSqlDatabase::removeDatabase("worker_chat_db");
+    QString path = QCoreApplication::applicationDirPath();
+    QString dbPath = path + "/data.db";
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",  "worker_chat_db");
+    db.setDatabaseName(dbPath);
+    if (!db.open()) {
+        db.exec("PRAGMA journal_mode = WAL;");
+        db.exec("PRAGMA cache_size = -8192;");
+        qDebug() << db.lastError().text();
+    } else {
+        qDebug() << "Database opened successfully";
+    }
 }

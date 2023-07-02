@@ -1,21 +1,22 @@
-#ifndef WORKERLOGOUT_H
-#define WORKERLOGOUT_H
+#ifndef WORKEROTHER_H
+#define WORKEROTHER_H
 #include "config.h"
 #include "queries.h"
 #include "requesthandler.h"
 #include <QObject>
 
-class WorkerLogout : public QObject
+class WorkerOther : public QObject
 {
     Q_OBJECT
 public :
-    explicit WorkerLogout(QString username ,QString password,QObject *parent = nullptr);
+    explicit WorkerOther(QString username ,QString password,QObject *parent = nullptr);
     QString m_token;
 private:
    QString m_username;
     QString m_password;
 public slots:
     void logout();
+    void openDB();
 
 signals:
     void failed(QString err);
@@ -24,4 +25,4 @@ signals:
 
 };
 
-#endif // WORKERLOGOUT_H
+#endif // WORKEROTHER_H

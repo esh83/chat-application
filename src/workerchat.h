@@ -26,6 +26,7 @@ public :
 public slots:
     void getChats();
     void sendChat();
+    void openDB();
 
 signals:
     void chatsReady(QVector<chatMsg> result);

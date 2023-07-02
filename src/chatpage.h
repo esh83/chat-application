@@ -14,7 +14,7 @@
 #include "requesthandler.h"
 #include "workerlist.h"
 #include "workerchat.h"
-#include "workerlogout.h"
+#include "workerother.h"
 namespace Ui {
 class ChatPage;
 }
@@ -70,8 +70,11 @@ private:
     QString m_currentChatName;
     WorkerList *m_workerlist;
     WorkerChat *m_workerchat;
-    WorkerLogout *m_workerlogout;
-    QThread *m_workerThread;
+    WorkerOther *m_workerother;
+    QThread *m_workerListThread;
+    QThread *m_workerChatThread;
+    QThread *m_workerOthersThread;
+    QThread *timerThread;
     bool m_shoud_scroll{false};
     int m_chats_count =0;
 

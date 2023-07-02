@@ -6,6 +6,9 @@
 #include "queries.h"
 #include "requesthandler.h"
 #include <QCoreApplication>
+#define PERSONAL_TAB 0
+#define CHANNEL_TAB 1
+#define GROUP_TAB 2
 
 class WorkerList : public QObject
 {
@@ -13,13 +16,16 @@ class WorkerList : public QObject
 public :
     explicit WorkerList(QString token ="" ,QObject *parent = nullptr);
     QString m_token;
+     int m_current_tab=PERSONAL_TAB;
 private:
     void getList(int chatType,QString endpoint);
     bool showMessage;
+
 public slots:
     void getUserList();
     void getGroupList();
     void getChannelList();
+    void getCurrentList();
     void openDB();
 
 signals:
