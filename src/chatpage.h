@@ -74,6 +74,7 @@ private:
     QThread *m_workerThread;
     bool m_shoud_scroll{false};
     int m_chats_count =0;
+    QString m_prevChatName = "";
 
 
 };

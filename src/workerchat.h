@@ -27,7 +27,6 @@ public slots:
     void getChats();
     void sendChat();
 
-
 signals:
     void chatsReady(QVector<chatMsg> result);
     void failedRead();
