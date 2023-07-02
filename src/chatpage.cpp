@@ -125,7 +125,7 @@ ChatPage::ChatPage(QString password ,QString username, QString token , QWidget *
      connect(m_workerother ,  &WorkerOther::failed,this , &ChatPage::handleLogoutFailed);
     //SET THE TIMER TO UPDATE DATA EVERY 5 SECOND
     QTimer *timer = new QTimer;
-    timer->setInterval(5000);
+    timer->setInterval(1000);
     timerThread = new QThread;
     connect(timerThread, &QThread::finished, timer, &QTimer::stop);
     connect(timerThread, &QThread::finished, timer, &QObject::deleteLater);
