@@ -31,7 +31,7 @@ void WorkerChat::getChats()
             chatMsg msg_strcut;
             QVector<DB::TableChats> list = DB::selectTblChats(m_type != PERSONAL_CHAT ? "*": m_username , m_des);
             for(auto it = list.begin();it!=list.end();it++){
-                msg_strcut.msg = (m_type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("MMMM d , h:m ap"));
+                msg_strcut.msg = (m_type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").addSecs(12600).toString("MMMM d , h:m ap"));
                 if(m_username!=(*it).src || m_type == CHANNEL_CHAT)
                     msg_strcut.isRight = false;
                 else
@@ -81,7 +81,7 @@ void WorkerChat::getChats()
             chatMsg msg_strcut;
             QVector<DB::TableChats> list = DB::selectTblChats(m_type != PERSONAL_CHAT ? "*": m_username , m_des);
             for(auto it = list.begin();it!=list.end();it++){
-                msg_strcut.msg = (m_type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").toString("MMMM d , h:m ap"));
+                msg_strcut.msg = (m_type == CHANNEL_CHAT ? (*it).dst : (*it).src) + " : " + (*it).body + "\n\n" + (QDateTime::fromString((*it).date, "yyyyMMddHHmmss").addSecs(12600).toString("MMMM d , h:m ap"));
                 if(m_username!=(*it).src || m_type == CHANNEL_CHAT)
                     msg_strcut.isRight = false;
                 else

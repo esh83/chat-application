@@ -19,11 +19,17 @@ void WorkerOther::logout()
         if (code == "200")
         {
             //RESET LOCAL DATABASE
-            DB::emptyTblInfo();
-            DB::emptyTblChatsList();
-            DB::emptyTblChats();
-            emit done();
-            emit success();
+            try{
+                DB::emptyTblInfo();
+                DB::emptyTblChatsList();
+                DB::emptyTblChats();
+                emit done();
+                emit success();
+            }catch(QString err){
+                qDebug() << "logout failed " << err;
+                emit done();
+                emit failed(err);
+            }
 
         }
         else{
